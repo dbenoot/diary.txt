@@ -16,11 +16,45 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"strconv"
+	"time"
 )
 
 func main() {
 
 	// define variables
+	switch os.Args[1] {
+	case "create":
+		createEntry()
+	case "render":
+		fmt.Println("Rendering!")
+	case "search":
+		fmt.Println(os.Args[2:])
+		//search(os.Args[2:])
+	case "archive":
+		//archiveCommand.Parse(os.Args[2:])
+	default:
+		fmt.Printf("%q is not valid command.\n", os.Args[1])
+		os.Exit(2)
+	}
+}
 
-	fmt.Printf("hello, world\n")
+func createEntry() {
+
+	//Check if the subdir for this year and month already exists. If not, create it.
+	t := time.Now()
+	dir := filepath.Join(strconv.Itoa(t.Year()), strconv.Itoa(int(t.Month())))
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		_ = os.MkdirAll(dir, 0755)
+		// if err2 != nil {
+		// 	return err2
+		// }
+	}
+
+	// Create the markdown file as YYYYMMDD-HHMM_title(if specified).md
+
+	os.Create(filepath.Join(dir, t.Format("2006-01-02T1504")+"_"+os.Args[2]+".md"))
+	fmt.Println("Created ", filepath.Join(dir, t.Format("2006-01-02T1504")+"_"+os.Args[2]+".md"))
 }
