@@ -1,0 +1,19 @@
+# General structure
+- folders: year / month /
+- filename: yyyymmdd-hhmm-TITLE.md
+- markdown
+- tags
+
+# Create
+
+- diary create -> creates entry and shows file location (opens in vi?)
+
+# Howto add tags?
+
+# Search and show item
+- ...SEARCHED TERM... (bold)
+- x words before and after searched item (with searched item also bold)
+
+# Search entries with certain tags
+
+# Render (partially?)
