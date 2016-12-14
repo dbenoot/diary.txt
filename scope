@@ -11,7 +11,8 @@
     x title
     x date
 
-# Howto add tags?
+# Tags
+- Howto add tags?
 
 # Search and show item
 - ...SEARCHED TERM... (bold)
@@ -19,4 +20,13 @@
 
 # Search entries with certain tags
 
-# Render (partially?)
+- flag:
+    x tag
+
+# Render
+
+- flag:
+    x year
+    x yearmonth
+    x tags
+    x combinations?
