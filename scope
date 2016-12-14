@@ -7,6 +7,9 @@
 # Create
 
 - diary create -> creates entry and shows file location (opens in vi?)
+- flag:
+    x title
+    x date
 
 # Howto add tags?
 
