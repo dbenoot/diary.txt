@@ -43,9 +43,14 @@ func main() {
 
 func createEntry() {
 
+	// Define variable
+
+	var title string
+
 	//Check if the subdir for this year and month already exists. If not, create it.
 	t := time.Now()
 	dir := filepath.Join(strconv.Itoa(t.Year()), strconv.Itoa(int(t.Month())))
+
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		_ = os.MkdirAll(dir, 0755)
 		// if err2 != nil {
@@ -53,8 +58,17 @@ func createEntry() {
 		// }
 	}
 
+	// Check if a title is entered, and if so concatenate using _
+	if len(os.Args) >= 2 {
+		for i := 2; i <= len(os.Args[1:]); i++ {
+			title = title + "_" + os.Args[i]
+		}
+	}
+
+	filename := t.Format("2006-01-02T1504") + title + ".md"
+
 	// Create the markdown file as YYYYMMDD-HHMM_title(if specified).md
 
-	os.Create(filepath.Join(dir, t.Format("2006-01-02T1504")+"_"+os.Args[2]+".md"))
-	fmt.Println("Created ", filepath.Join(dir, t.Format("2006-01-02T1504")+"_"+os.Args[2]+".md"))
+	os.Create(filepath.Join(dir, filename))
+	fmt.Println("Created ", filepath.Join(dir, filename))
 }
