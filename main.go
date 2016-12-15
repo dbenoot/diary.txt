@@ -43,7 +43,7 @@ func main() {
 	case "render":
 		fmt.Println("Rendering!")
 	case "search":
-		walkFiles(".", os.Args[2])
+		search(".", os.Args[2])
 		//search(os.Args[2:])
 	default:
 		fmt.Printf("%q is not valid command.\n", os.Args[1])

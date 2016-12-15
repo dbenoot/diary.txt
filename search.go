@@ -35,7 +35,7 @@ func searchString(file string, text string) (err error) {
 	return err
 }
 
-func walkFiles(location string, text string) (err error) {
+func search(location string, text string) (err error) {
 	fileList := []string{}
 	err = filepath.Walk(location, func(path string, f os.FileInfo, err error) error {
 		fileList = append(fileList, path)
