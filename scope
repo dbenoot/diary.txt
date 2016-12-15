@@ -1,32 +1,35 @@
 # General structure
-- folders: year / month /
-- filename: yyyymmdd-hhmm-TITLE.md
-- markdown
-- tags
+x folders: year / month /
+x filename: yyyy-mm-ddThhmm-TITLE.md
+x markdown
+x tags
 
-# Create
-
-- diary create -> creates entry and shows file location (opens in vi?)
-- flag:
+# Create -> DONE
+x diary create -> creates entry and shows file location
+x flag:
     x title
     x date
 
-# Tags
-- Howto add tags?
+# Tags -> DONE
+x tags in md
 
-# Search and show item
-- ...SEARCHED TERM... (bold)
-- x words before and after searched item (with searched item also bold)
+# Text search and show item
+x search on text
+- visualize it nicely
+    - filename
+    - ...SEARCHED TERM... (bold)
+    - 100 characters before and after searched item (with searched item also bold or colored)
 
 # Search entries with certain tags
-
 - flag:
-    x tag
+    - tag
 
 # Render
-
 - flag:
-    x year
-    x yearmonth
-    x tags
-    x combinations?
+    - all
+    - year
+    - yearmonth
+    - tags
+    - combinations?
+    
+# Attachment -> add media attachment?? 

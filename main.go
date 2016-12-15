@@ -15,60 +15,45 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strconv"
 	"time"
 )
 
 func main() {
 
 	// define variables
+
+	t := time.Now()
+	tStr := t.Format("2006-01-02T1504")
+	tStrTitle := t.Format("02 January 2006")
+
+	// define the flag command options
+
+	createCommand := flag.NewFlagSet("create", flag.ExitOnError)
+	titleCreateFlag := createCommand.String("title", tStrTitle, "Title your diary entry. Default is today's date.")
+	dateCreateFlag := createCommand.String("date", tStr, "Specify the date for your diary entry. Default is today.")
+
+	// define command switch
+
 	switch os.Args[1] {
 	case "create":
-		createEntry()
+		createCommand.Parse(os.Args[2:])
 	case "render":
 		fmt.Println("Rendering!")
 	case "search":
-		fmt.Println(os.Args[2:])
+		walkFiles(".", os.Args[2])
 		//search(os.Args[2:])
-	case "archive":
-		//archiveCommand.Parse(os.Args[2:])
 	default:
 		fmt.Printf("%q is not valid command.\n", os.Args[1])
 		os.Exit(2)
 	}
-}
 
-func createEntry() {
+	// Parse create command
 
-	// Define variable
-
-	var title string
-
-	//Check if the subdir for this year and month already exists. If not, create it.
-	t := time.Now()
-	dir := filepath.Join(strconv.Itoa(t.Year()), strconv.Itoa(int(t.Month())))
-
-	if _, err := os.Stat(dir); os.IsNotExist(err) {
-		_ = os.MkdirAll(dir, 0755)
-		// if err2 != nil {
-		// 	return err2
-		// }
+	if createCommand.Parsed() {
+		createEntry(*titleCreateFlag, *dateCreateFlag)
 	}
 
-	// Check if a title is entered, and if so concatenate using _
-	if len(os.Args) >= 2 {
-		for i := 2; i <= len(os.Args[1:]); i++ {
-			title = title + "_" + os.Args[i]
-		}
-	}
-
-	filename := t.Format("2006-01-02T1504") + title + ".md"
-
-	// Create the markdown file as YYYYMMDD-HHMM_title(if specified).md
-
-	os.Create(filepath.Join(dir, filename))
-	fmt.Println("Created ", filepath.Join(dir, filename))
 }
