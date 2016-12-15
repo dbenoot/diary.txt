@@ -13,12 +13,11 @@ x flag:
 # Tags -> DONE
 x tags in md
 
-# Text search and show item
+# Text search and show item -> DONE
 x search on text
-- visualize it nicely
-    - filename
-    - ...SEARCHED TERM... (bold)
-    - 100 characters before and after searched item (with searched item also bold or colored)
+x visualize it nicely
+    x filename
+    x line in which item is present with searched item also bold or colored
 
 # Search entries with certain tags
 - flag:

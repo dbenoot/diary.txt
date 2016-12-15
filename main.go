@@ -35,6 +35,10 @@ func main() {
 	titleCreateFlag := createCommand.String("title", tStrTitle, "Title your diary entry. Default is today's date.")
 	dateCreateFlag := createCommand.String("date", tStr, "Specify the date for your diary entry. Default is today.")
 
+	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
+	verboseSearchFlag := searchCommand.Bool("v", false, "Search verbosity. Default is false.")
+	textSearchFlag := searchCommand.String("text", "", "Search text. Default is empty.")
+
 	// define command switch
 
 	switch os.Args[1] {
@@ -43,8 +47,7 @@ func main() {
 	case "render":
 		fmt.Println("Rendering!")
 	case "search":
-		search(".", os.Args[2])
-		//search(os.Args[2:])
+		searchCommand.Parse(os.Args[2:])
 	default:
 		fmt.Printf("%q is not valid command.\n", os.Args[1])
 		os.Exit(2)
@@ -56,4 +59,7 @@ func main() {
 		createEntry(*titleCreateFlag, *dateCreateFlag)
 	}
 
+	if searchCommand.Parsed() {
+		search(".", *textSearchFlag, *verboseSearchFlag)
+	}
 }
