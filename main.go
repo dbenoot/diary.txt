@@ -38,6 +38,7 @@ func main() {
 	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
 	verboseSearchFlag := searchCommand.Bool("v", false, "Search verbosity. Default is false.")
 	textSearchFlag := searchCommand.String("text", "", "Search text. Default is empty.")
+	tagSearchFlag := searchCommand.String("tag", "", "Search text. Default is empty.")
 
 	// define command switch
 
@@ -60,6 +61,6 @@ func main() {
 	}
 
 	if searchCommand.Parsed() {
-		search(".", *textSearchFlag, *verboseSearchFlag)
+		search(".", *textSearchFlag, *tagSearchFlag, *verboseSearchFlag)
 	}
 }

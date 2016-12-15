@@ -3,14 +3,16 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/fatih/color"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
+
+	"github.com/fatih/color"
 	// 	"text/scanner"
 )
 
-func searchString(file string, text string, v bool) (err error) {
+func searchString(file string, text string, tag string, v bool) (err error) {
 
 	f, err := os.Open(file)
 	if err != nil {
@@ -19,29 +21,74 @@ func searchString(file string, text string, v bool) (err error) {
 
 	scanner := bufio.NewScanner(f)
 
+	tags := getTags(file)
+
 	line := 1
-	for scanner.Scan() {
-		if strings.Contains(scanner.Text(), text) {
-			fmt.Println("Found in entry", file, "on line", line)
-			if v == true {
-				coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
-				blue := color.New(color.Bold, color.FgBlue).SprintFunc()
-				fmt.Printf(coloredText, blue(text))
-				fmt.Println("\n")
+	c := 0
+
+	if len(tag) == 0 || stringInSlice(tag, tags) == true {
+		for scanner.Scan() {
+			if strings.Contains(scanner.Text(), text) == true && c == 0 {
+				color.Green("Search criteria present in journal entry " + file)
+				color.Cyan("on line " + strconv.Itoa(line))
+				if v == true {
+					coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
+					blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+					fmt.Printf(coloredText, blue(text))
+					fmt.Print("\n\n")
+					// fmt.Println("\n")
+				}
+				c++
+			} else if strings.Contains(scanner.Text(), text) == true && c > 0 {
+				color.Cyan("on line " + strconv.Itoa(line))
+				if v == true {
+					coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
+					blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+					fmt.Printf(coloredText, blue(text))
+					fmt.Print("\n\n")
+					// fmt.Println("\n")
+				}
+
 			}
+			line++
 		}
-
-		line++
 	}
-
-	if err := scanner.Err(); err != nil {
-		// Handle the error
-	}
+	// if err := scanner.Err(); err != nil {
+	// 	// Handle the error
+	// }
 
 	return err
 }
 
-func search(location string, text string, v bool) (err error) {
+func getTags(file string) []string {
+
+	f, _ := os.Open(file)
+
+	scanner := bufio.NewScanner(f)
+
+	for scanner.Scan() {
+		if strings.Contains(scanner.Text(), "tags:") == true {
+			r := strings.Split(strings.Split(scanner.Text(), ":")[1], ",")
+			var tags []string
+			for _, str := range r {
+				tags = append(tags, strings.TrimSpace(str))
+			}
+			return tags
+		}
+	}
+	return nil
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
+}
+
+func search(location string, text string, tag string, v bool) (err error) {
 	fileList := []string{}
 	err = filepath.Walk(location, func(path string, f os.FileInfo, err error) error {
 		fileList = append(fileList, path)
@@ -49,7 +96,7 @@ func search(location string, text string, v bool) (err error) {
 	})
 	for _, file := range fileList {
 		if strings.Contains(file, ".md") == true {
-			searchString(file, text, v)
+			searchString(file, text, tag, v)
 		}
 	}
 
