@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func createEntry(title string, t string) {
+func createEntry(wd string, title string, t string, p []string) {
 
 	// Derive the year and month
 
@@ -18,7 +18,7 @@ func createEntry(title string, t string) {
 
 	//Check if the subdir for this year and month already exists. If not, create it.
 
-	dir := filepath.Join(y, m)
+	dir := filepath.Join(wd, y, m)
 
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		_ = os.MkdirAll(dir, 0755)
@@ -40,7 +40,11 @@ func createEntry(title string, t string) {
 		// Add title and tags to file
 		// Entry title has md headertag ### as the year and month will get # and ## respectively during the render
 
-		content := "### " + title + "\n\ndate: " + t + "\ntags: \n\n"
+		content := "### " + title + "\n\ndate: " + t + "\ntags: "
+
+		for i := 0; i < len(p); i++ {
+			content = content + "\n" + p[i] + ":"
+		}
 
 		err := ioutil.WriteFile(file, []byte(content), 0644)
 		if err != nil {

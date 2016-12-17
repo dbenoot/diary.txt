@@ -12,6 +12,7 @@ x flag:
 
 # Tags -> DONE
 x tags in md
+x personalised pins in config.ini
 
 # Text search and show item -> DONE
 x search on text
@@ -30,5 +31,5 @@ x visualize it nicely
     - yearmonth
     - tags
     - combinations?
-    
-# Attachment -> add media attachment?? 
+
+# Attachment -> add media attachment??
