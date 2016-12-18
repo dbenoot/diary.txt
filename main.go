@@ -94,7 +94,7 @@ func main() {
 	case "create":
 		createCommand.Parse(os.Args[2:])
 	case "render":
-		fmt.Println("Rendering!")
+		render(diary.wd)
 	case "search":
 		searchCommand.Parse(os.Args[2:])
 	case "set":
