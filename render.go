@@ -61,10 +61,15 @@ func render(location string) (err error) {
 	sort.Strings(fileList)
 
 	// concatenate contents
-
+	var y string
+	var m string
 	buf := bytes.NewBuffer(nil)
 	for _, file := range fileList {
 		if strings.Contains(file, ".md") == true {
+			// if strings.Split(file, "-")[0] != y {
+			// 	y = strings.Split(file, "-")[0]
+			// 	io.Copy(buf, ("#" + y)) // copy year string to file...
+			// }
 			f, _ := os.Open(file)
 			io.Copy(buf, f)
 			f.Close()
