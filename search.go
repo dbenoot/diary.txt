@@ -17,6 +17,7 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -29,6 +30,7 @@ import (
 func searchString(file string, text string, tag string, v bool) (err error) {
 
 	f, err := os.Open(file)
+	fc, err := ioutil.ReadFile(file)
 	if err != nil {
 		return err
 	}
@@ -44,9 +46,12 @@ func searchString(file string, text string, tag string, v bool) (err error) {
 		if stringInSlice(tag, tags) == true && len(text) == 0 {
 			color.Green("Search criteria present in journal entry " + file)
 			color.Cyan("Journal entry is tagged with " + tag)
+			if v == true {
+				fmt.Println(string(fc))
+			}
 		} else {
 			for scanner.Scan() {
-				if strings.Contains(scanner.Text(), text) == true && c == 0 {
+				if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(text)) == true && c == 0 {
 					color.Green("Search criteria present in journal entry " + file)
 					if stringInSlice(tag, tags) == true {
 						color.Cyan("Journal entry is tagged with " + tag)
@@ -54,17 +59,17 @@ func searchString(file string, text string, tag string, v bool) (err error) {
 					color.Cyan("Text is present on line " + strconv.Itoa(line))
 					if v == true {
 						coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
-						blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+						blue := color.New(color.Bold, color.FgRed).SprintFunc()
 						fmt.Printf(coloredText, blue(text))
 						fmt.Print("\n\n")
 						// fmt.Println("\n")
 					}
 					c++
-				} else if strings.Contains(scanner.Text(), text) == true && c > 0 {
+				} else if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(text)) == true && c > 0 {
 					color.Cyan("Text is present on line " + strconv.Itoa(line))
 					if v == true {
 						coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
-						blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+						blue := color.New(color.Bold, color.FgRed).SprintFunc()
 						fmt.Printf(coloredText, blue(text))
 						fmt.Print("\n\n")
 						// fmt.Println("\n")

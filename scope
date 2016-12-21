@@ -20,9 +20,11 @@ x visualize it nicely
     x filename
     x line in which item is present with searched item also bold or colored
 
-# Search entries with certain tags
+# Search entries with additional criteria
 x flag:
     x tag
+    - year
+    - month
 
 # Render
 - flag:
@@ -31,5 +33,6 @@ x flag:
     x month (only 1 at this moment)
     x tags (only 1 at this moment)
     x combinations
+    - multiple 
 
 # Attachment -> add media attachment??
