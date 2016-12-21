@@ -41,30 +41,38 @@ func searchString(file string, text string, tag string, v bool) (err error) {
 	c := 0
 
 	if len(tag) == 0 || stringInSlice(tag, tags) == true {
-		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), text) == true && c == 0 {
-				color.Green("Search criteria present in journal entry " + file)
-				color.Cyan("on line " + strconv.Itoa(line))
-				if v == true {
-					coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
-					blue := color.New(color.Bold, color.FgBlue).SprintFunc()
-					fmt.Printf(coloredText, blue(text))
-					fmt.Print("\n\n")
-					// fmt.Println("\n")
-				}
-				c++
-			} else if strings.Contains(scanner.Text(), text) == true && c > 0 {
-				color.Cyan("on line " + strconv.Itoa(line))
-				if v == true {
-					coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
-					blue := color.New(color.Bold, color.FgBlue).SprintFunc()
-					fmt.Printf(coloredText, blue(text))
-					fmt.Print("\n\n")
-					// fmt.Println("\n")
-				}
+		if stringInSlice(tag, tags) == true && len(text) == 0 {
+			color.Green("Search criteria present in journal entry " + file)
+			color.Cyan("Journal entry is tagged with " + tag)
+		} else {
+			for scanner.Scan() {
+				if strings.Contains(scanner.Text(), text) == true && c == 0 {
+					color.Green("Search criteria present in journal entry " + file)
+					if stringInSlice(tag, tags) == true {
+						color.Cyan("Journal entry is tagged with " + tag)
+					}
+					color.Cyan("Text is present on line " + strconv.Itoa(line))
+					if v == true {
+						coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
+						blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+						fmt.Printf(coloredText, blue(text))
+						fmt.Print("\n\n")
+						// fmt.Println("\n")
+					}
+					c++
+				} else if strings.Contains(scanner.Text(), text) == true && c > 0 {
+					color.Cyan("Text is present on line " + strconv.Itoa(line))
+					if v == true {
+						coloredText := strings.Replace(scanner.Text(), text, "%[1]s", -1)
+						blue := color.New(color.Bold, color.FgBlue).SprintFunc()
+						fmt.Printf(coloredText, blue(text))
+						fmt.Print("\n\n")
+						// fmt.Println("\n")
+					}
 
+				}
+				line++
 			}
-			line++
 		}
 	}
 	// if err := scanner.Err(); err != nil {
@@ -109,7 +117,7 @@ func search(location string, text string, tag string, v bool) (err error) {
 		return nil
 	})
 	for _, file := range fileList {
-		if strings.Contains(file, ".md") == true {
+		if strings.Contains(file, ".md") == true && strings.Contains(file, "rendered_diary.md") == false { //make more robust
 			searchString(file, text, tag, v)
 		}
 	}
