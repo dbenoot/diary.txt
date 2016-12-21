@@ -51,10 +51,10 @@ func createEntry(wd string, title string, t string, p []string) {
 		// Add title and tags to file
 		// Entry title has md headertag ### as the year and month will get # and ## respectively during the render
 
-		content := "### " + title + "\n\ndate: " + t + "\ntags: "
+		content := "### " + title + "\n\n* date: " + t + "\n* tags: "
 
 		for i := 0; i < len(p); i++ {
-			content = content + "\n" + p[i] + ":"
+			content = content + "\n* " + p[i] + ":"
 		}
 
 		err := ioutil.WriteFile(file, []byte(content), 0644)

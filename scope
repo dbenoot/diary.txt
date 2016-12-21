@@ -21,15 +21,15 @@ x visualize it nicely
     x line in which item is present with searched item also bold or colored
 
 # Search entries with certain tags
-- flag:
-    - tag
+x flag:
+    x tag
 
 # Render
 - flag:
-    - all
-    - year
-    - yearmonth
-    - tags
-    - combinations?
+    x all
+    x year (only 1 at this moment)
+    x month (only 1 at this moment)
+    x tags (only 1 at this moment)
+    x combinations
 
 # Attachment -> add media attachment??

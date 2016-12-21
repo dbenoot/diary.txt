@@ -77,6 +77,11 @@ func main() {
 	textSearchFlag := searchCommand.String("text", "", "Search text. Default is empty.")
 	tagSearchFlag := searchCommand.String("tag", "", "Search text. Default is empty.")
 
+	renderCommand := flag.NewFlagSet("render", flag.ExitOnError)
+	tagRenderFlag := renderCommand.String("tag", "", "Render specific tag. Default is empty.")
+	yearRenderFlag := renderCommand.String("year", "", "Render specific year. Default is empty.")
+	monthRenderFlag := renderCommand.String("month", "", "Render specific month. Default is empty. Format is 2 digit numeric.")
+
 	setCommand := flag.NewFlagSet("set", flag.ExitOnError)
 	// wdSetFlag := setCommand.String("home", "~/diary", "Set the home directory. The default is ~/diary")
 	// addPinSetFlag := setCommand.String("add-pin", "", "Add a pinned item. A pinned item is an item that will be created in all new journal entries. E.g. weight, book reading,...")
@@ -94,7 +99,7 @@ func main() {
 	case "create":
 		createCommand.Parse(os.Args[2:])
 	case "render":
-		render(diary.wd)
+		renderCommand.Parse(os.Args[2:])
 	case "search":
 		searchCommand.Parse(os.Args[2:])
 	case "set":
@@ -112,5 +117,9 @@ func main() {
 
 	if searchCommand.Parsed() {
 		search(diary.wd, *textSearchFlag, *tagSearchFlag, *verboseSearchFlag)
+	}
+
+	if renderCommand.Parsed() {
+		render(diary.wd, *tagRenderFlag, *yearRenderFlag, *monthRenderFlag)
 	}
 }
