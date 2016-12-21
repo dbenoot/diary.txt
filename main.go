@@ -76,14 +76,14 @@ func main() {
 	pinCreateFlag := createCommand.Bool("pin", true, "Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
 
 	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
-	verboseSearchFlag := searchCommand.Bool("v", false, "Search verbosity. Default is false.")
+	verboseSearchFlag := searchCommand.Bool("v", false, "Set the output verbosity. Default is false.")
 	textSearchFlag := searchCommand.String("text", "", "Search text. Default is empty.")
-	tagSearchFlag := searchCommand.String("tag", "", "Search text. Default is empty.")
+	tagSearchFlag := searchCommand.String("tag", "", "Search for entries with a specific tag. Default is empty.")
 
 	renderCommand := flag.NewFlagSet("render", flag.ExitOnError)
-	tagRenderFlag := renderCommand.String("tag", "", "Render specific tag. Default is empty.")
-	yearRenderFlag := renderCommand.String("year", "", "Render specific year. Default is empty.")
-	monthRenderFlag := renderCommand.String("month", "", "Render specific month. Default is empty. Format is 2 digit numeric.")
+	tagRenderFlag := renderCommand.String("tag", "", "Render journal entries with a specific tag. Default is empty.")
+	yearRenderFlag := renderCommand.String("year", "", "Render journal entries from a specific year. Default is empty.")
+	monthRenderFlag := renderCommand.String("month", "", "Render journal entries from a specific month. Default is empty. Format is 2 digit numeric.")
 
 	setCommand := flag.NewFlagSet("set", flag.ExitOnError)
 	// wdSetFlag := setCommand.String("home", "~/diary", "Set the home directory. The default is ~/diary")
@@ -94,25 +94,45 @@ func main() {
 
 	if len(os.Args) == 1 {
 		fmt.Println("Please provide secondary command.")
+		fmt.Println("")
+		fmt.Println("The following commands can be issued:")
+		fmt.Println("")
+		fmt.Println("create          Creates a new journal entry")
+		fmt.Println("  -title        Title your diary entry. Default is today's date.")
+		fmt.Println("  -date         Specify the date for your diary entry. Format should be yyyy-mm-ddThhmm (e.g. 2006-01-02T1504). Default is today.")
+		fmt.Println("  -text         Add text to the diary entry. Especially useful for short notes, for larger notes an editor is best used. Default is empty.")
+		fmt.Println("  -tag          Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
+		fmt.Println("  -pin          Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
+		fmt.Println("")
+		fmt.Println("render          Renders your diary entries to a single markdown and html document located in the rendered subfolder in your diary home directory.")
+		fmt.Println("  -tag          Render journal entries with a specific tag. Default is empty.")
+		fmt.Println("  -year         Render journal entries from a specific year. Default is empty.")
+		fmt.Println("  -month        Render journal entries from a specific month. Default is empty. Format is 2 digit numeric.")
+		fmt.Println("")
+		fmt.Println("search          Search your journal entries")
+		fmt.Println("  -tag          Search for entries with a specific tag. Default is empty.")
+		fmt.Println("  -text         Search text. Default is empty.")
+		fmt.Println("  -v            Set the output verbosity. Default is false.")
+	} else {
+
+		// define command switch
+
+		switch os.Args[1] {
+		case "create":
+			createCommand.Parse(os.Args[2:])
+		case "render":
+			renderCommand.Parse(os.Args[2:])
+		case "search":
+			searchCommand.Parse(os.Args[2:])
+		case "set":
+			setCommand.Parse(os.Args[2:])
+		default:
+			fmt.Printf("%q is not valid command.\n", os.Args[1])
+			os.Exit(2)
+		}
 	}
 
-	// define command switch
-
-	switch os.Args[1] {
-	case "create":
-		createCommand.Parse(os.Args[2:])
-	case "render":
-		renderCommand.Parse(os.Args[2:])
-	case "search":
-		searchCommand.Parse(os.Args[2:])
-	case "set":
-		setCommand.Parse(os.Args[2:])
-	default:
-		fmt.Printf("%q is not valid command.\n", os.Args[1])
-		os.Exit(2)
-	}
-
-	// Parse create command
+	// Parse commands
 
 	if createCommand.Parsed() {
 		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, *tagCreateFlag, *pinCreateFlag, diary.pins, *textCreateFlag)
