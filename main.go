@@ -71,6 +71,9 @@ func main() {
 	createCommand := flag.NewFlagSet("create", flag.ExitOnError)
 	titleCreateFlag := createCommand.String("title", tStrTitle, "Title your diary entry. Default is today's date.")
 	dateCreateFlag := createCommand.String("date", tStr, "Specify the date for your diary entry. Default is today.")
+	textCreateFlag := createCommand.String("text", "", "Add text to the diary entry. Especially useful for short notes, for larger notes an editor is best used. Default is empty.")
+	tagCreateFlag := createCommand.String("tag", "", "Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
+	pinCreateFlag := createCommand.Bool("pin", true, "Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
 
 	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
 	verboseSearchFlag := searchCommand.Bool("v", false, "Search verbosity. Default is false.")
@@ -112,7 +115,7 @@ func main() {
 	// Parse create command
 
 	if createCommand.Parsed() {
-		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, diary.pins)
+		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, *tagCreateFlag, *pinCreateFlag, diary.pins, *textCreateFlag)
 	}
 
 	if searchCommand.Parsed() {

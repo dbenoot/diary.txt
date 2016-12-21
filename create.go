@@ -23,7 +23,7 @@ import (
 	"strings"
 )
 
-func createEntry(wd string, title string, t string, p []string) {
+func createEntry(wd string, title string, t string, tag string, pb bool, p []string, c string) {
 
 	// Derive the year and month
 
@@ -43,19 +43,34 @@ func createEntry(wd string, title string, t string, p []string) {
 
 	// Create the markdown file as YYYYMMDD-HHMM_title(if specified).md
 	if _, err := os.Stat(file); err == nil {
-		fmt.Println("File already exists.")
+
+		fmt.Println("A journal entry for this date and time already exists.")
+
 	} else {
+
 		os.Create(file)
 		fmt.Println("Created ", file)
 
 		// Add title and tags to file
 		// Entry title has md headertag ### as the year and month will get # and ## respectively during the render
 
-		content := "### " + title + "\n\n* date: " + t + "\n* tags: "
+		content := "### " + title + "\n\n* date: " + t + "\n* tags: " + tag
 
-		for i := 0; i < len(p); i++ {
-			content = content + "\n* " + p[i] + ":"
+		// add pins if applicable
+
+		if pb == true && len(p) > 0 {
+			for i := 0; i < len(p); i++ {
+				content = content + "\n* " + p[i] + ":"
+			}
 		}
+
+		// add content in case it is included in the command line
+
+		if len(c) > 0 {
+			content = content + "\n\n" + c
+		}
+
+		// write the file
 
 		err := ioutil.WriteFile(file, []byte(content), 0644)
 		if err != nil {
