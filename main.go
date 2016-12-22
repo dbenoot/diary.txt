@@ -79,6 +79,8 @@ func main() {
 	verboseSearchFlag := searchCommand.Bool("v", false, "Set the output verbosity. Default is false.")
 	textSearchFlag := searchCommand.String("text", "", "Search text. Default is empty.")
 	tagSearchFlag := searchCommand.String("tag", "", "Search for entries with a specific tag. Default is empty.")
+	yearSearchFlag := searchCommand.String("year", "", "Search for entries with a specific year. Default is empty.")
+	monthSearchFlag := searchCommand.String("month", "", "Search for entries with a specific month. Default is empty.")
 
 	renderCommand := flag.NewFlagSet("render", flag.ExitOnError)
 	tagRenderFlag := renderCommand.String("tag", "", "Render journal entries with a specific tag. Default is empty.")
@@ -139,7 +141,7 @@ func main() {
 	}
 
 	if searchCommand.Parsed() {
-		search(diary.wd, *textSearchFlag, *tagSearchFlag, *verboseSearchFlag)
+		search(diary.wd, *textSearchFlag, *tagSearchFlag, *yearSearchFlag, *monthSearchFlag, *verboseSearchFlag)
 	}
 
 	if renderCommand.Parsed() {
