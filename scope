@@ -23,8 +23,14 @@ x visualize it nicely
 # Search entries with additional criteria
 x flag:
     x tag
-    - year
-    - month
+    x year
+    x month
+
+# Pins
+    x add pins
+    x remove pins
+    x list pins
+    x list specific pin contents
 
 # Render
 - flag:
