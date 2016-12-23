@@ -130,7 +130,7 @@ func filterText(f []string, t string) []string {
 		scanner := bufio.NewScanner(fo)
 
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), t) == true {
+			if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(t)) == true {
 				c++
 			}
 		}
