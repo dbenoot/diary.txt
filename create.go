@@ -58,25 +58,27 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 		content := "### " + title + "\n\n* date: " + t + "\n* tags: " + tag
 
-		// copy pins content if applicable
+		// copy pins content from previous entry, if applicable
 
-		fileList := []string{}
-		err = filepath.Walk(wd, func(path string, f os.FileInfo, err error) error {
-			fileList = append(fileList, path)
-			return nil
-		})
+		if cp == true {
+			fileList := []string{}
+			err = filepath.Walk(wd, func(path string, f os.FileInfo, err error) error {
+				fileList = append(fileList, path)
+				return nil
+			})
 
-		fileList = filterFile(fileList)
+			fileList = filterFile(fileList)
 
-		sortutil.CiAsc(fileList)
-		fmt.Println(fileList[len(fileList)-2])
-		scanfile, _ := os.Open(fileList[len(fileList)-2])
-		scanner := bufio.NewScanner(scanfile)
-		for scanner.Scan() {
-			for _, a := range p {
+			sortutil.CiAsc(fileList)
+			fmt.Printf("Pin content copied from %s \n", fileList[len(fileList)-2])
+			scanfile, _ := os.Open(fileList[len(fileList)-2])
+			scanner := bufio.NewScanner(scanfile)
+			for scanner.Scan() {
+				for _, a := range p {
 
-				if strings.Contains(scanner.Text(), "* "+a+":") == true {
-					content = content + "\n" + scanner.Text()
+					if strings.Contains(scanner.Text(), "* "+a+":") == true {
+						content = content + "\n" + scanner.Text()
+					}
 				}
 			}
 		}
