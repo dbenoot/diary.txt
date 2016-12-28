@@ -73,6 +73,7 @@ func main() {
 	textCreateFlag := createCommand.String("text", "", "Add text to the diary entry. Especially useful for short notes, for larger notes an editor is best used. Default is empty.")
 	tagCreateFlag := createCommand.String("tag", "", "Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
 	pinCreateFlag := createCommand.Bool("pin", true, "Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
+	pinCopyFlag := createCommand.Bool("copypin", false, "Copy pins contents from your most recent journal entry. Default is false.")
 
 	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
 	verboseSearchFlag := searchCommand.Bool("v", false, "Set the output verbosity. Default is false.")
@@ -111,6 +112,7 @@ func main() {
 		fmt.Println("  -text         Add text to the diary entry. Especially useful for short notes, for larger notes an editor is best used. Default is empty.")
 		fmt.Println("  -tag          Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
 		fmt.Println("  -pin          Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
+		fmt.Println("  -copypin      Copies the pin content from the last written journal entry.")
 		fmt.Println("")
 		fmt.Println("render          Renders your diary entries to a single markdown and html document located in the rendered subfolder in your diary home directory.")
 		fmt.Println("  -tag          Render journal entries with a specific tag. Default is empty.")
@@ -152,7 +154,7 @@ func main() {
 	// Parse commands
 
 	if createCommand.Parsed() {
-		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, *tagCreateFlag, *pinCreateFlag, diary.pins, *textCreateFlag)
+		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, *tagCreateFlag, *pinCreateFlag, *pinCopyFlag, diary.pins, *textCreateFlag)
 	}
 
 	if searchCommand.Parsed() {

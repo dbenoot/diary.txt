@@ -49,7 +49,7 @@ func filterFile(f []string) []string {
 	var fo []string
 
 	for _, file := range f {
-		if strings.Contains(file, "rendered_diary") == false {
+		if strings.Contains(file, "rendered_diary") == false && strings.Contains(file, ".md") {
 			fo = append(fo, file)
 		}
 	}

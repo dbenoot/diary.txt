@@ -15,7 +15,9 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"github.com/pmylund/sortutil"
 	"io/ioutil"
 	"log"
 	"os"
@@ -23,7 +25,7 @@ import (
 	"strings"
 )
 
-func createEntry(wd string, title string, t string, tag string, pb bool, p []string, c string) {
+func createEntry(wd string, title string, t string, tag string, pb bool, cp bool, p []string, c string) {
 
 	// Derive the year and month
 
@@ -56,9 +58,32 @@ func createEntry(wd string, title string, t string, tag string, pb bool, p []str
 
 		content := "### " + title + "\n\n* date: " + t + "\n* tags: " + tag
 
+		// copy pins content if applicable
+
+		fileList := []string{}
+		err = filepath.Walk(wd, func(path string, f os.FileInfo, err error) error {
+			fileList = append(fileList, path)
+			return nil
+		})
+
+		fileList = filterFile(fileList)
+
+		sortutil.CiAsc(fileList)
+		fmt.Println(fileList[len(fileList)-2])
+		scanfile, _ := os.Open(fileList[len(fileList)-2])
+		scanner := bufio.NewScanner(scanfile)
+		for scanner.Scan() {
+			for _, a := range p {
+
+				if strings.Contains(scanner.Text(), "* "+a+":") == true {
+					content = content + "\n" + scanner.Text()
+				}
+			}
+		}
+
 		// add pins if applicable
 
-		if pb == true && len(p) > 0 {
+		if pb == true && len(p) > 0 && cp == false {
 			for i := 0; i < len(p); i++ {
 				content = content + "\n* " + p[i] + ":"
 			}
@@ -76,5 +101,15 @@ func createEntry(wd string, title string, t string, tag string, pb bool, p []str
 		if err != nil {
 			log.Fatalln(err)
 		}
+
 	}
+}
+
+func StringContainInSlice(s []string, e string) bool {
+	for _, a := range s {
+		if strings.Contains(a, e) == true {
+			return true
+		}
+	}
+	return false
 }
