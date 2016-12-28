@@ -74,6 +74,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 			fileList = append(fileList, path)
 			return nil
 		})
+		fileList = filterFile(fileList)
 
 		color.Green("Full index of the specified pins and their unique values:")
 
