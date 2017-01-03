@@ -18,7 +18,6 @@ import (
 	"bufio"
 	"fmt"
 	"github.com/fatih/color"
-	// 	"github.com/go-ini/ini"
 	"github.com/pmylund/sortutil"
 	"os"
 	"path/filepath"
@@ -63,6 +62,8 @@ func tag(i bool, l string, sd string) {
 		}
 	}
 
+	// process index command
+
 	if i == true {
 		color.Green("Full index of the used tags and times used:")
 
@@ -82,6 +83,8 @@ func tag(i bool, l string, sd string) {
 		}
 	}
 
+	// process list command
+
 	if len(l) != 0 {
 		if len(tagFiles[l]) != 0 {
 			color.Green("The tag %s was used in the following files:", l)
@@ -92,6 +95,8 @@ func tag(i bool, l string, sd string) {
 			color.Green("The tag %s is not present in your journal entries.", l)
 		}
 	}
+
+	// return errors
 
 	if err != nil {
 		fmt.Println(err)
