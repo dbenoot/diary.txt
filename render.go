@@ -12,13 +12,6 @@
 //   See the License for the specific language governing permissions and
 //   limitations under the License.
 
-// - read all files
-//   filepath.walk??
-// - sort files
-//   sort.Strings(strs)
-// - concatenate all the resulting strings
-// - md -> html
-
 package main
 
 import (
