@@ -87,17 +87,16 @@ func main() {
 	yearRenderFlag := renderCommand.String("year", "", "Render journal entries from a specific year. Default is empty.")
 	monthRenderFlag := renderCommand.String("month", "", "Render journal entries from a specific month. Default is empty. Format is 2 digit numeric.")
 
+	tagCommand := flag.NewFlagSet("tag", flag.ExitOnError)
+	indexTagFlag := tagCommand.Bool("index", false, "Shows all tags.")
+	listTagFlag := tagCommand.String("list", "", "Shows all items for a specific tag.")
+
 	pinCommand := flag.NewFlagSet("pin", flag.ExitOnError)
 	addPinFlag := pinCommand.String("add", "", "Add a pin. Default is empty.")
 	removePinFlag := pinCommand.String("remove", "", "Remove a pin. Default is empty.")
 	indexPinFlag := pinCommand.Bool("index", false, "Shows all prespecified pins.")
 	indexAllPinFlag := pinCommand.Bool("indexall", false, "Shows all prespecifed pins with their distinct answers.")
 	listPinFlag := pinCommand.String("list", "", "Shows all items for a specific pin.")
-
-	// setCommand := flag.NewFlagSet("set", flag.ExitOnError)
-	// wdSetFlag := setCommand.String("home", "~/diary", "Set the home directory. The default is ~/diary")
-	// addPinSetFlag := setCommand.String("add-pin", "", "Add a pinned item. A pinned item is an item that will be created in all new journal entries. E.g. weight, book reading,...")
-	// removePinSetFlag := setCommand.String("remove-pin", "", "Remove a pinned item.")
 
 	// What to show when no arguments are defined
 
@@ -124,6 +123,10 @@ func main() {
 		fmt.Println("  -text         Search text. Default is empty.")
 		fmt.Println("  -v            Set the output verbosity. Default is false.")
 		fmt.Println("")
+		fmt.Println("tag")
+		fmt.Println("  -index        Shows all tags.")
+		fmt.Println("  -list         Shows all journal entries for a specific tag.")
+		fmt.Println("")
 		fmt.Println("pin             Administrate the journal pins.")
 		fmt.Println("  -add          Add a pin. Default is empty.")
 		fmt.Println("  -remove       Remove a pin. Default is empty.")
@@ -143,8 +146,8 @@ func main() {
 			searchCommand.Parse(os.Args[2:])
 		case "pin":
 			pinCommand.Parse(os.Args[2:])
-		// case "set":
-		// 	setCommand.Parse(os.Args[2:])
+		case "tag":
+			tagCommand.Parse(os.Args[2:])
 		default:
 			fmt.Printf("%q is not valid command.\n", os.Args[1])
 			os.Exit(2)
@@ -163,6 +166,10 @@ func main() {
 
 	if renderCommand.Parsed() {
 		render(diary.wd, *tagRenderFlag, *yearRenderFlag, *monthRenderFlag)
+	}
+
+	if tagCommand.Parsed() {
+		tag(*indexTagFlag, *listTagFlag, diary.wd)
 	}
 
 	if pinCommand.Parsed() {

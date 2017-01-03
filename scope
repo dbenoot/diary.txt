@@ -23,6 +23,7 @@ x visualize it nicely
 # Search entries with additional criteria
 x flag:
     x tag
+    - alltag
     x year
     x month
 
