@@ -17,7 +17,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	// "fmt"
 	"github.com/russross/blackfriday"
 	"io"
 	"io/ioutil"
@@ -105,11 +104,7 @@ func render(location string, tag string, year string, month string) (err error) 
 	// create fileList of all .md files
 
 	fileList := []string{}
-
-	err = filepath.Walk(location, func(path string, f os.FileInfo, err error) error {
-		fileList = append(fileList, path)
-		return nil
-	})
+	fileList, err = getFileList(location)
 
 	// sort the fileList alphabetically
 
@@ -134,27 +129,25 @@ func render(location string, tag string, year string, month string) (err error) 
 	var m int
 	buf := bytes.NewBuffer(nil)
 	for _, file := range fileList {
-		if strings.Contains(file, ".md") == true && strings.Contains(file, "rendered_diary.md") == false { //Change this a more robust file structure checker: only if file structure is correct, include the file
-			if strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[0] != y {
-				y = strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[0]
-				b := bytes.NewBufferString("# " + y + "\n")
-				io.Copy(buf, b)
-				m = 0
-			}
-
-			if strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[1] != strconv.Itoa(m) {
-				m, err = strconv.Atoi(strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[1])
-				months := [...]string{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}
-				b := bytes.NewBufferString("## " + months[m-1] + "\n")
-				io.Copy(buf, b)
-			}
-
-			nl := bytes.NewBufferString("\n\n")
-			f, _ := os.Open(file)
-			io.Copy(buf, f)
-			io.Copy(buf, nl)
-			f.Close()
+		if strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[0] != y {
+			y = strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[0]
+			b := bytes.NewBufferString("# " + y + "\n")
+			io.Copy(buf, b)
+			m = 0
 		}
+
+		if strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[1] != strconv.Itoa(m) {
+			m, err = strconv.Atoi(strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[1])
+			months := [...]string{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}
+			b := bytes.NewBufferString("## " + months[m-1] + "\n")
+			io.Copy(buf, b)
+		}
+
+		nl := bytes.NewBufferString("\n\n")
+		f, _ := os.Open(file)
+		io.Copy(buf, f)
+		io.Copy(buf, nl)
+		f.Close()
 	}
 	err = ioutil.WriteFile(ef, buf.Bytes(), 0644)
 
@@ -172,7 +165,6 @@ func render(location string, tag string, year string, month string) (err error) 
 
 	err = ioutil.WriteFile(hf, html.Bytes(), 0644)
 
-	// defer exportFile.Close()
 	return err
 
 }

@@ -21,7 +21,6 @@ import (
 	"github.com/go-ini/ini"
 	"github.com/pmylund/sortutil"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -70,11 +69,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 		s := cfg.Section("general").Key("pins").Strings(",")
 
 		fileList := []string{}
-		err = filepath.Walk(sd, func(path string, f os.FileInfo, err error) error {
-			fileList = append(fileList, path)
-			return nil
-		})
-		fileList = filterFile(fileList)
+		fileList, err = getFileList(sd)
 
 		color.Green("Full index of the specified pins and their unique values:")
 
@@ -98,7 +93,6 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 			}
 
 			color.Cyan("Entries for pin " + s[i])
-			// 			fmt.Println(len(index))
 			if len(index) != 0 {
 				sortutil.CiAsc(index)
 				for j := range index {
@@ -111,12 +105,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 	if len(l) > 0 {
 
 		fileList := []string{}
-		err = filepath.Walk(sd, func(path string, f os.FileInfo, err error) error {
-			fileList = append(fileList, path)
-			return nil
-		})
-
-		fileList = filterFile(fileList) //function used in search.go
+		fileList, err = getFileList(sd) //function used in search.go
 
 		var index []string
 		var date []string
@@ -159,9 +148,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 
 	}
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	check(err)
 }
 
 func AppendIfMissing(slice []string, i string) []string {

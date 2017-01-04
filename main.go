@@ -18,7 +18,6 @@ import (
 	"flag"
 	"fmt"
 	"github.com/go-ini/ini"
-	"log"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -40,11 +39,10 @@ func main() {
 		pins []string
 	}
 
-	// Check that the settings directory (sd) exists and if not create a preliminary config file
+	// check that the settings directory (sd) exists and if not create a preliminary config file
+
 	usr, err := user.Current()
-	if err != nil {
-		log.Fatal(err)
-	}
+	check(err)
 
 	sd := filepath.Join(usr.HomeDir, ".diarytxt")
 	cfgFile := filepath.Join(sd, "config.ini")
@@ -62,7 +60,8 @@ func main() {
 	}
 
 	if len(diary.wd) == 0 {
-		fmt.Println("Home dir not set, please add to config.ini")
+		fmt.Printf("Home directory not set, please add to config.ini. Config file is located here: %s \n", sd)
+		os.Exit(2)
 	}
 
 	// define the flag command options
