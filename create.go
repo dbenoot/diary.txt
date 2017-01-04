@@ -17,11 +17,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/pmylund/sortutil"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/pmylund/sortutil"
 )
 
 func createEntry(wd string, title string, t string, tag string, pb bool, cp bool, p []string, c string) {
@@ -71,12 +72,22 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 			fmt.Printf("Pin content copied from %s \n", fileList[len(fileList)-2])
 			scanfile, _ := os.Open(fileList[len(fileList)-2])
 			scanner := bufio.NewScanner(scanfile)
+			var added []string
 			for scanner.Scan() {
+
 				for _, a := range p {
 
 					if strings.Contains(scanner.Text(), "* "+a+":") == true {
 						content = content + "\n" + scanner.Text()
+						added = append(added, a)
 					}
+
+				}
+			}
+			tocreate := difference(added, p)
+			if len(tocreate) != 0 {
+				for _, add := range tocreate {
+					content = content + "\n" + "* " + add + ":"
 				}
 			}
 		}
@@ -101,13 +112,4 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 		check(err)
 
 	}
-}
-
-func StringContainInSlice(s []string, e string) bool {
-	for _, a := range s {
-		if strings.Contains(a, e) == true {
-			return true
-		}
-	}
-	return false
 }
