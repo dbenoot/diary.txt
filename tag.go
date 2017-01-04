@@ -20,7 +20,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/pmylund/sortutil"
 	"os"
-	"path/filepath"
 	"strings"
 )
 
@@ -33,14 +32,8 @@ func tag(i bool, l string, sd string) {
 	// get all the filenames
 
 	fileList := []string{}
-	err = filepath.Walk(sd, func(path string, f os.FileInfo, err error) error {
-		fileList = append(fileList, path)
-		return nil
-	})
-
-	// filter the incorrect filenames out
-
-	fileList = filterFile(fileList)
+	fileList, err = getFileList(sd)
+	check(err)
 
 	// iterate over files and different tags and create the tags map
 
@@ -65,6 +58,7 @@ func tag(i bool, l string, sd string) {
 	// process index command
 
 	if i == true {
+
 		color.Green("Full index of the used tags and times used:")
 
 		// sort alphabetically
@@ -98,7 +92,5 @@ func tag(i bool, l string, sd string) {
 
 	// return errors
 
-	if err != nil {
-		fmt.Println(err)
-	}
+	check(err)
 }
