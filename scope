@@ -43,19 +43,19 @@ x flag:
     - multiple 
 
 # Statistics
-    - # entries
+    x # entries
     - # entries/year
-    - average entries/year and /month
-    - x most used words
-    - average tags/entry
+    x average entries/year and /month
+    x x most used words
+    x average tags/entry
     - TODO # of different pins in actual entries and pin completion rate
 
 # Attachment -> add media attachment??
 
 
 -- STATISTICAL VALUES --
-# entries
-# year
-# months
-# tags
-map of all words + amount
+x # entries
+x # year
+x # months
+x # tags
+x map of all words + amount
