@@ -30,12 +30,19 @@ func statistics(wd string, t string) {
 
 	// variables
 
-	var entries, twc, y, year, years, m, month, months, tags int
+	var entries, twc, y, year, years, m, month, months, tags, uniquetags int
 	var err error
 	var f []string
 	var superstring string
 	var pintags = regexp.MustCompile(`\*\s\w+:`)
 	wc := make(map[string]int)
+	tagsMap := make(map[string]int)
+
+	of := filepath.Join(wd, "logs", "statistics_"+t+".txt")
+
+	fo, err := os.Create(of)
+	check(err)
+	defer fo.Close()
 
 	// populate variables
 
@@ -94,6 +101,15 @@ func statistics(wd string, t string) {
 				if len(t) != 0 {
 					ts := strings.Split(t, ",")
 					tags = tags + len(ts)
+
+					for _, tt := range ts {
+						tt = strings.TrimSpace(tt)
+						if tagsMap[tt] == 0 {
+							uniquetags++
+						}
+						tagsMap[tt]++
+					}
+
 				}
 			}
 
@@ -104,24 +120,15 @@ func statistics(wd string, t string) {
 
 	// output
 
-	od := filepath.Join(wd, "logs")
-	of := filepath.Join(wd, "logs", "statistics_"+t+".txt")
-
-	if _, err := os.Stat(od); os.IsNotExist(err) {
-		_ = os.MkdirAll(od, 0755)
-	}
-
 	fmt.Printf("Statistics log created: %s \n", of)
 
-	fo, err := os.Create(of)
-	check(err)
-	defer fo.Close()
-
-	fo.WriteString("Total amount of journal entries: " + strconv.Itoa(entries) + "\n")
-	fo.WriteString("Averge entries per year: " + strconv.Itoa(entries/years) + "\n")
-	fo.WriteString("Average entries per month: " + strconv.Itoa(entries/months) + "\n")
-	fo.WriteString("Amount of tags used: " + strconv.Itoa(tags) + "\n")
-	fo.WriteString("Total word count: " + strconv.Itoa(twc) + "\n\n")
+	fo.WriteString("Total amount of journal entries:   " + strconv.Itoa(entries) + "\n")
+	fo.WriteString("Averge entries per year:           " + strconv.Itoa(entries/years) + "\n")
+	fo.WriteString("Average entries per month:         " + strconv.Itoa(entries/months) + "\n")
+	fo.WriteString("Amount of unique tags used:        " + strconv.Itoa(uniquetags) + "\n")
+	fo.WriteString("Total amount of tags used:         " + strconv.Itoa(tags) + "\n")
+	fo.WriteString("Average amount of tags per entry:  " + strconv.FormatFloat(float64(tags)/float64(entries), 'f', 3, 64) + "\n")
+	fo.WriteString("Total word count:                  " + strconv.Itoa(twc) + "\n\n")
 
 	fo.WriteString("Tab-separated list of amount of times a word is used: \n\n")
 	fo.WriteString("word\t#\tword density\n")
