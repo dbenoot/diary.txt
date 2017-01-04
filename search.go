@@ -20,7 +20,6 @@ import (
 	"github.com/fatih/color"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -28,12 +27,9 @@ import (
 
 func search(location string, text string, tag string, y string, m string, v bool) (err error) {
 	fileList := []string{}
-	err = filepath.Walk(location, func(path string, f os.FileInfo, err error) error {
-		fileList = append(fileList, path)
-		return nil
-	})
 
-	fileList = filterFile(fileList)
+	fileList, err = getFileList(location)
+
 	fileList = filterTag(fileList, tag)
 	fileList = filterYear(fileList, y)
 	fileList = filterMonth(fileList, m)
@@ -43,19 +39,6 @@ func search(location string, text string, tag string, y string, m string, v bool
 
 	return err
 }
-
-// func filterFile(f []string) []string {
-
-// 	var fo []string
-
-// 	for _, file := range f {
-// 		if strings.Contains(file, "rendered_diary") == false && strings.Contains(file, ".md") {
-// 			fo = append(fo, file)
-// 		}
-// 	}
-
-// 	return fo
-// }
 
 func filterTag(f []string, t string) []string {
 
@@ -67,7 +50,7 @@ func filterTag(f []string, t string) []string {
 		scanner := bufio.NewScanner(fo)
 
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "tags:") == true && strings.Contains(scanner.Text(), t) == true {
+			if strings.Contains(scanner.Text(), "* tags:") == true && strings.Contains(scanner.Text(), t) == true {
 				fileList = append(fileList, file)
 			}
 		}
@@ -86,7 +69,7 @@ func filterYear(f []string, y string) []string {
 		scanner := bufio.NewScanner(fo)
 
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "date:") == true {
+			if strings.Contains(scanner.Text(), "* date:") == true {
 				year := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]
 				if strings.Contains(year, y) == true {
 					fileList = append(fileList, file)
@@ -108,7 +91,7 @@ func filterMonth(f []string, m string) []string {
 		scanner := bufio.NewScanner(fo)
 
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "date:") == true {
+			if strings.Contains(scanner.Text(), "* date:") == true {
 				month := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1]
 				if strings.Contains(month, m) == true {
 					fileList = append(fileList, file)
