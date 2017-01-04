@@ -59,6 +59,15 @@ func main() {
 		pins: cfg.Section("general").Key("pins").Strings(","),
 	}
 
+	renderdir := filepath.Join(wd, "rendered")
+	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
+		_ = os.MkdirAll(renderdir, 0755)
+	}
+	logdir := filepath.Join(wd, "logs")
+	if _, err := os.Stat(logdir); os.IsNotExist(err) {
+		_ = os.MkdirAll(logdir, 0755)
+	}
+
 	if len(diary.wd) == 0 {
 		fmt.Printf("Home directory not set, please add to config.ini. Config file is located here: %s \n", sd)
 		os.Exit(2)
