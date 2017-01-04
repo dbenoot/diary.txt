@@ -148,6 +148,8 @@ func main() {
 			pinCommand.Parse(os.Args[2:])
 		case "tag":
 			tagCommand.Parse(os.Args[2:])
+		case "stat":
+			statistics(diary.wd, tStr)
 		default:
 			fmt.Printf("%q is not valid command.\n", os.Args[1])
 			os.Exit(2)

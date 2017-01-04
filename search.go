@@ -44,18 +44,18 @@ func search(location string, text string, tag string, y string, m string, v bool
 	return err
 }
 
-func filterFile(f []string) []string {
+// func filterFile(f []string) []string {
 
-	var fo []string
+// 	var fo []string
 
-	for _, file := range f {
-		if strings.Contains(file, "rendered_diary") == false && strings.Contains(file, ".md") {
-			fo = append(fo, file)
-		}
-	}
+// 	for _, file := range f {
+// 		if strings.Contains(file, "rendered_diary") == false && strings.Contains(file, ".md") {
+// 			fo = append(fo, file)
+// 		}
+// 	}
 
-	return fo
-}
+// 	return fo
+// }
 
 func filterTag(f []string, t string) []string {
 
