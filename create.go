@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"github.com/pmylund/sortutil"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -61,15 +60,14 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 		// copy pins content from previous entry, if applicable
 
 		if cp == true {
-			fileList := []string{}
-			err = filepath.Walk(wd, func(path string, f os.FileInfo, err error) error {
-				fileList = append(fileList, path)
-				return nil
-			})
 
-			fileList = filterFile(fileList)
+			fileList := []string{}
+
+			fileList, err = getFileList(wd)
+			check(err)
 
 			sortutil.CiAsc(fileList)
+
 			fmt.Printf("Pin content copied from %s \n", fileList[len(fileList)-2])
 			scanfile, _ := os.Open(fileList[len(fileList)-2])
 			scanner := bufio.NewScanner(scanfile)
@@ -100,9 +98,7 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 		// write the file
 
 		err := ioutil.WriteFile(file, []byte(content), 0644)
-		if err != nil {
-			log.Fatalln(err)
-		}
+		check(err)
 
 	}
 }
