@@ -59,11 +59,11 @@ func main() {
 		pins: cfg.Section("general").Key("pins").Strings(","),
 	}
 
-	renderdir := filepath.Join(wd, "rendered")
+	renderdir := filepath.Join(diary.wd, "rendered")
 	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
 		_ = os.MkdirAll(renderdir, 0755)
 	}
-	logdir := filepath.Join(wd, "logs")
+	logdir := filepath.Join(diary.wd, "logs")
 	if _, err := os.Stat(logdir); os.IsNotExist(err) {
 		_ = os.MkdirAll(logdir, 0755)
 	}
