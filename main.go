@@ -26,12 +26,6 @@ import (
 
 func main() {
 
-	// define variables
-
-	t := time.Now()
-	tStr := t.Format("2006-01-02T1504")
-	tStrTitle := t.Format("02 January 2006")
-
 	// define Diary
 
 	type Diary struct {
@@ -39,39 +33,29 @@ func main() {
 		pins []string
 	}
 
-	// check that the settings directory (sd) exists and if not create a preliminary config file
+	// define variables
 
-	usr, err := user.Current()
-	check(err)
+	t := time.Now()
+	tStr := t.Format("2006-01-02T1504")
+	tStrTitle := t.Format("02 January 2006")
 
-	sd := filepath.Join(usr.HomeDir, ".diarytxt")
-	cfgFile := filepath.Join(sd, "config.ini")
+	diary := Diary{}
 
-	if _, err := os.Stat(cfgFile); os.IsNotExist(err) {
-		_ = os.MkdirAll(sd, 0755)
-		os.Create(cfgFile)
-	}
+	var localCfgFile string
 
-	var cfg, _ = ini.LooseLoad(cfgFile)
+	// check that the local config directory (sd) exists and if not create a preliminary config file
 
-	var diary = Diary{
-		wd:   cfg.Section("general").Key("home").String(),
-		pins: cfg.Section("general").Key("pins").Strings(","),
-	}
+	diary.wd = setWorkDir()
 
-	renderdir := filepath.Join(diary.wd, "rendered")
-	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
-		_ = os.MkdirAll(renderdir, 0755)
-	}
-	logdir := filepath.Join(diary.wd, "logs")
-	if _, err := os.Stat(logdir); os.IsNotExist(err) {
-		_ = os.MkdirAll(logdir, 0755)
-	}
+	// Create diary specific config file.
+	// This makes it possible to sync diary specific settings (only the pins at this moment) when using cloud sync, as this sync file is in the diary folder.
+	// Splitting up the config files gives the ability to run the executable from anywhere and not only in the diary folder and sanely keep diary specific settings when syncing.
 
-	if len(diary.wd) == 0 {
-		fmt.Printf("Home directory not set, please add to config.ini. Config file is located here: %s \n", sd)
-		os.Exit(2)
-	}
+	diary.pins, localCfgFile = setPins(diary.wd)
+
+	// make sure the necessary paths are present
+
+	createDirs(diary.wd)
 
 	// define the flag command options
 
@@ -183,6 +167,59 @@ func main() {
 	}
 
 	if pinCommand.Parsed() {
-		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, cfgFile, os.Args)
+		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, localCfgFile, os.Args)
 	}
+}
+
+func createDirs(wd string) {
+	renderdir := filepath.Join(wd, "rendered")
+	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
+		_ = os.MkdirAll(renderdir, 0755)
+	}
+	logdir := filepath.Join(wd, "logs")
+	if _, err := os.Stat(logdir); os.IsNotExist(err) {
+		_ = os.MkdirAll(logdir, 0755)
+	}
+}
+
+func setWorkDir() string {
+	usr, err := user.Current()
+	check(err)
+
+	sd := filepath.Join(usr.HomeDir, ".diarytxt")
+	cfgFile := filepath.Join(sd, "config.ini")
+
+	if _, err := os.Stat(cfgFile); os.IsNotExist(err) {
+		_ = os.MkdirAll(sd, 0755)
+		os.Create(cfgFile)
+		var cfg, _ = ini.LooseLoad(cfgFile)
+		_, _ = cfg.Section("general").NewKey("home", "")
+		err = cfg.SaveTo(cfgFile)
+	}
+
+	var cfg, _ = ini.LooseLoad(cfgFile)
+
+	if len(cfg.Section("general").Key("home").String()) == 0 {
+		fmt.Printf("Home directory not set, please add to config.ini. Config file is located here: %s \n", sd)
+		os.Exit(2)
+	}
+
+	return cfg.Section("general").Key("home").String()
+}
+
+func setPins(wd string) ([]string, string) {
+	settingsDir := filepath.Join(wd, "settings")
+	localCfgFile := filepath.Join(settingsDir, "local_config.ini")
+
+	if _, err := os.Stat(localCfgFile); os.IsNotExist(err) {
+		_ = os.MkdirAll(settingsDir, 0755)
+		os.Create(localCfgFile)
+		var localCfg, _ = ini.LooseLoad(localCfgFile)
+		_, _ = localCfg.Section("general").NewKey("pins", "")
+		err = localCfg.SaveTo(localCfgFile)
+	}
+
+	var localCfg, _ = ini.LooseLoad(localCfgFile)
+
+	return localCfg.Section("general").Key("pins").Strings(","), localCfgFile
 }

@@ -31,7 +31,12 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 	var cfg, _ = ini.LooseLoad(cfgFile)
 
 	if len(a) > 0 {
-		p := cfg.Section("general").Key("pins").String() + ", " + a
+		p := cfg.Section("general").Key("pins").String()
+		if len(p) == 0 {
+			p = a
+		} else {
+			p = p + ", " + a
+		}
 		_, _ = cfg.Section("general").NewKey("pins", p)
 		err = cfg.SaveTo(cfgFile)
 	}
