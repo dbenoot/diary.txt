@@ -24,13 +24,12 @@ import (
 	"strings"
 )
 
-func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile string, args []string) {
+func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string, cfgFile string, args []string) {
 
 	var err error
 
-	var cfg, _ = ini.LooseLoad(cfgFile)
-
 	if len(a) > 0 {
+		var cfg, _ = ini.LooseLoad(cfgFile)
 		p := cfg.Section("general").Key("pins").String()
 		if len(p) == 0 {
 			p = a
@@ -43,42 +42,44 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 
 	if len(r) > 0 {
 		var p string
-		s := cfg.Section("general").Key("pins").Strings(",")
-		for i, v := range s {
-			if v == r {
-				s = append(s[:i], s[i+1:]...)
-				break
+
+		if stringInSlice(r, pins) == false {
+			fmt.Printf("Pin '%s' not defined.\n", r)
+		} else {
+			var cfg, _ = ini.LooseLoad(cfgFile)
+			for i, v := range pins {
+				if v == r {
+					pins = append(pins[:i], pins[i+1:]...)
+					break
+				}
 			}
-		}
-		for j := range s {
-			if j == len(s)-1 {
-				p = p + s[j]
-			} else {
-				p = p + s[j] + ", "
+			for j := range pins {
+				if j == len(pins)-1 {
+					p = p + pins[j]
+				} else {
+					p = p + pins[j] + ", "
+				}
 			}
+			_, _ = cfg.Section("general").NewKey("pins", p)
+			err = cfg.SaveTo(cfgFile)
 		}
-		_, _ = cfg.Section("general").NewKey("pins", p)
-		err = cfg.SaveTo(cfgFile)
 	}
 
 	if i == true {
-		s := cfg.Section("general").Key("pins").Strings(",")
 		color.Green("Specified pins:")
-		for i := range s {
-			fmt.Println(s[i])
+		for i := range pins {
+			fmt.Println(pins[i])
 		}
 	}
 
 	if ia == true {
-
-		s := cfg.Section("general").Key("pins").Strings(",")
 
 		fileList := []string{}
 		fileList, err = getFileList(sd)
 
 		color.Green("Full index of the specified pins and their unique values:")
 
-		for i := range s {
+		for i := range pins {
 
 			var index []string
 
@@ -88,8 +89,8 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 				scanner := bufio.NewScanner(fo)
 
 				for scanner.Scan() {
-					if strings.Contains(scanner.Text(), "* "+s[i]+":") == true {
-						item := strings.TrimSpace(strings.Replace(scanner.Text(), "* "+s[i]+":", "", -1))
+					if strings.Contains(scanner.Text(), "* "+pins[i]+":") == true {
+						item := strings.TrimSpace(strings.Replace(scanner.Text(), "* "+pins[i]+":", "", -1))
 						if len(item) > 0 {
 							index = AppendIfMissing(index, item)
 						}
@@ -97,7 +98,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 				}
 			}
 
-			color.Cyan("Entries for pin " + s[i])
+			color.Cyan("Entries for pin " + pins[i])
 			if len(index) != 0 {
 				sortutil.CiAsc(index)
 				for j := range index {
@@ -142,15 +143,19 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, cfgFile strin
 
 		}
 
-		color.Green("Dated entries for pin " + l)
+		if len(index) == 0 {
 
-		if len(index) != 0 {
+			color.Green("Pin '" + l + "' not present or never completed in journal entries.")
+
+		} else {
+
+			color.Green("Dated entries for pin '" + l + "':")
+
 			sortutil.CiAsc(index)
 			for k := range index {
 				fmt.Printf("%v \t %s \t %s \n", date[k], index[k], files[k])
 			}
 		}
-
 	}
 
 	check(err)
@@ -163,4 +168,13 @@ func AppendIfMissing(slice []string, i string) []string {
 		}
 	}
 	return append(slice, i)
+}
+
+func stringInSlice(a string, list []string) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }

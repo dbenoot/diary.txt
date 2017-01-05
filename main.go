@@ -169,7 +169,7 @@ func main() {
 	}
 
 	if pinCommand.Parsed() {
-		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, localCfgFile, os.Args)
+		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, diary.pins, localCfgFile, os.Args)
 	}
 }
 

@@ -45,13 +45,14 @@ func filterFile(f []string, wd string) []string {
 	var r = regexp.MustCompile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{4}_['\\w,\\s-\\.]*\\.md")
 	logdir := filepath.Join(wd, "logs")
 	renderdir := filepath.Join(wd, "rendered")
+	settingsdir := filepath.Join(wd, "settings")
 
 	for _, file := range f {
 		if r.MatchString(file) && strings.Contains(file, renderdir) == false { //&& strings.Contains(file, ".md") {
 			fo = append(fo, file)
 		} else {
 			fi, _ := os.Stat(file)
-			if fi.Mode().IsRegular() == true && strings.Contains(file, renderdir) == false && strings.Contains(file, logdir) == false {
+			if fi.Mode().IsRegular() == true && strings.Contains(file, renderdir) == false && strings.Contains(file, logdir) == false && strings.Contains(file, settingsdir) == false {
 				fmt.Printf("File was not included in the filterlist %s. Please check filterFile function. \n", file)
 			}
 		}
