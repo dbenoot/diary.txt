@@ -1,31 +1,35 @@
 # General structure
-x folders: year / month /
-x filename: yyyy-mm-ddThhmm-TITLE.md
-x markdown
-x tags
+    x folders: year / month /
+    x filename: yyyy-mm-ddThhmm-TITLE.md
+    x markdown
+    x tags
+
+# ini
+    - local settings and diary settings
 
 # Create -> DONE
-x diary create -> creates entry and shows file location
-x flag:
-    x title
-    x date
+    x diary create -> creates entry and shows file location
+    x flag:
+        x title
+        x date
+    x copypin
 
 # Tags -> DONE
-x tags in md
-x personalised pins in config.ini
+    x tags in md
+    x personalised pins in config.ini
 
 # Text search and show item -> DONE
-x search on text
-x visualize it nicely
-    x filename
-    x line in which item is present with searched item also bold or colored
+    x search on text
+    x visualize it nicely
+        x filename
+        x line in which item is present with searched item also bold or colored
 
 # Search entries with additional criteria
-x flag:
-    x tag
-    - alltag
-    x year
-    x month
+    x flag:
+        x tag
+        - alltag
+        x year
+        x month
 
 # Pins
     x add pins
@@ -34,13 +38,13 @@ x flag:
     x list specific pin contents
 
 # Render
-- flag:
-    x all
-    x year (only 1 at this moment)
-    x month (only 1 at this moment)
-    x tags (only 1 at this moment)
-    x combinations
-    - multiple 
+    - flag:
+        x all
+        x year (only 1 at this moment)
+        x month (only 1 at this moment)
+        x tags (only 1 at this moment)
+        x combinations
+        - multiple 
 
 # Statistics
     x # entries
@@ -51,11 +55,3 @@ x flag:
     - TODO # of different pins in actual entries and pin completion rate
 
 # Attachment -> add media attachment??
-
-
--- STATISTICAL VALUES --
-x # entries
-x # year
-x # months
-x # tags
-x map of all words + amount
