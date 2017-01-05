@@ -38,17 +38,16 @@ func main() {
 	t := time.Now()
 	tStr := t.Format("2006-01-02T1504")
 	tStrTitle := t.Format("02 January 2006")
+	var localCfgFile string
 
 	diary := Diary{}
-
-	var localCfgFile string
 
 	// check that the local config directory (sd) exists and if not create a preliminary config file
 
 	diary.wd = setWorkDir()
 
-	// Create diary specific config file.
-	// This makes it possible to sync diary specific settings (only the pins at this moment) when using cloud sync, as this sync file is in the diary folder.
+	// Create and load diary specific config file (only the pins at this moment)
+	// This makes it possible to sync diary specific settings when using cloud sync, as this sync file is in the diary folder.
 	// Splitting up the config files gives the ability to run the executable from anywhere and not only in the diary folder and sanely keep diary specific settings when syncing.
 
 	diary.pins, localCfgFile = setPins(diary.wd)
@@ -105,7 +104,7 @@ func main() {
 		fmt.Println("  -pin          Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
 		fmt.Println("  -copypin      Copies the pin content from the last written journal entry.")
 		fmt.Println("")
-		fmt.Println("render          Renders your diary entries to a single markdown and html document located in the rendered subfolder in your diary home directory.")
+		fmt.Println("render          Renders your diary entries to a single markdown and html document located in the rendered folder in your diary home directory.")
 		fmt.Println("  -tag          Render journal entries with a specific tag. Default is empty.")
 		fmt.Println("  -year         Render journal entries from a specific year. Default is empty.")
 		fmt.Println("  -month        Render journal entries from a specific month. Default is empty. Format is 2 digit numeric.")
@@ -125,6 +124,9 @@ func main() {
 		fmt.Println("  -index        Shows all prespecified pins.")
 		fmt.Println("  -indexall     Shows all prespecifed pins with their distinct answers.")
 		fmt.Println("  -list         Shows all items for a specific pin.")
+		fmt.Println("")
+		fmt.Println("stat            Some basic statistics about your diary. Output is saved in the logs folder in your diary home directory.")
+
 	} else {
 
 		// define command switch
@@ -171,17 +173,6 @@ func main() {
 	}
 }
 
-func createDirs(wd string) {
-	renderdir := filepath.Join(wd, "rendered")
-	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
-		_ = os.MkdirAll(renderdir, 0755)
-	}
-	logdir := filepath.Join(wd, "logs")
-	if _, err := os.Stat(logdir); os.IsNotExist(err) {
-		_ = os.MkdirAll(logdir, 0755)
-	}
-}
-
 func setWorkDir() string {
 	usr, err := user.Current()
 	check(err)
@@ -222,4 +213,15 @@ func setPins(wd string) ([]string, string) {
 	var localCfg, _ = ini.LooseLoad(localCfgFile)
 
 	return localCfg.Section("general").Key("pins").Strings(","), localCfgFile
+}
+
+func createDirs(wd string) {
+	renderdir := filepath.Join(wd, "rendered")
+	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
+		_ = os.MkdirAll(renderdir, 0755)
+	}
+	logdir := filepath.Join(wd, "logs")
+	if _, err := os.Stat(logdir); os.IsNotExist(err) {
+		_ = os.MkdirAll(logdir, 0755)
+	}
 }
