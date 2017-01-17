@@ -73,7 +73,9 @@ func tag(i bool, l string, sd string) {
 		// report based on alphabetical slice
 
 		for _, k := range keys {
-			fmt.Println(k, "\t", tags[k])
+			if k != "" {
+				fmt.Println(k, "\t", tags[k])
+			}
 		}
 	}
 
