@@ -111,7 +111,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 	if len(l) > 0 {
 
 		fileList := []string{}
-		fileList, err = getFileList(sd) //function used in search.go
+		fileList, err = getFileList(sd)
 
 		var index []string
 		var date []string
@@ -151,7 +151,6 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 
 			color.Green("Dated entries for pin '" + l + "':")
 
-			sortutil.CiAsc(index)
 			for k := range index {
 				fmt.Printf("%v \t %s \t %s \n", date[k], index[k], files[k])
 			}
