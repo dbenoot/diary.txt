@@ -81,6 +81,7 @@ func main() {
 	tagCommand := flag.NewFlagSet("tag", flag.ExitOnError)
 	indexTagFlag := tagCommand.Bool("index", false, "Shows all tags.")
 	listTagFlag := tagCommand.String("list", "", "Shows all items for a specific tag.")
+	verboseTagFlag := tagCommand.Bool("v", false, "Set the output verbosity. Default is false.")
 
 	pinCommand := flag.NewFlagSet("pin", flag.ExitOnError)
 	addPinFlag := pinCommand.String("add", "", "Add a pin. Default is empty.")
@@ -112,11 +113,14 @@ func main() {
 		fmt.Println("search          Search your journal entries")
 		fmt.Println("  -tag          Search for entries with a specific tag. Default is empty.")
 		fmt.Println("  -text         Search text. Default is empty.")
+		fmt.Println("  -year         Search journal items for a specific year. Default is empty.")
+		fmt.Println("  -month        Search journal items for a specific month. Default is empty.")
 		fmt.Println("  -v            Set the output verbosity. Default is false.")
 		fmt.Println("")
 		fmt.Println("tag")
 		fmt.Println("  -index        Shows all tags.")
 		fmt.Println("  -list         Shows all journal entries for a specific tag.")
+		fmt.Println("  -v            Set the output verbosity. Default is false.")
 		fmt.Println("")
 		fmt.Println("pin             Administrate the journal pins.")
 		fmt.Println("  -add          Add a pin. Default is empty.")
@@ -165,7 +169,7 @@ func main() {
 	}
 
 	if tagCommand.Parsed() {
-		tag(*indexTagFlag, *listTagFlag, diary.wd)
+		tag(*indexTagFlag, *listTagFlag, diary.wd, *verboseTagFlag)
 	}
 
 	if pinCommand.Parsed() {

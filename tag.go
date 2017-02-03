@@ -19,11 +19,12 @@ import (
 	"fmt"
 	"github.com/fatih/color"
 	"github.com/pmylund/sortutil"
+	"io/ioutil"
 	"os"
 	"strings"
 )
 
-func tag(i bool, l string, sd string) {
+func tag(i bool, l string, sd string, v bool) {
 
 	tags := make(map[string]int)
 	tagFiles := make(map[string][]string)
@@ -85,7 +86,11 @@ func tag(i bool, l string, sd string) {
 		if len(tagFiles[l]) != 0 {
 			color.Green("The tag %s was used in the following files:", l)
 			for a, _ := range tagFiles[l] {
-				fmt.Println(tagFiles[l][a])
+				color.Cyan(tagFiles[l][a])
+				if v == true {
+					fc, _ := ioutil.ReadFile(tagFiles[l][a])
+					fmt.Println(string(fc))
+				}
 			}
 		} else {
 			color.Green("The tag %s is not present in your journal entries.", l)
