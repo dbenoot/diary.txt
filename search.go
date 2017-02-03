@@ -26,21 +26,27 @@ import (
 )
 
 func search(location string, text string, tag string, y string, m string, v bool) (err error) {
-	fileList := []string{}
+	// fileList := []string{}
+	var fileList, tSlice, tagSlice, ySlice, mSlice []string
 
 	fileList, err = getFileList(location)
 
-	fileList = filterTag(fileList, tag)
-	fileList = filterYear(fileList, y)
-	fileList = filterMonth(fileList, m)
-	fileList = filterText(fileList, text)
+	tagSlice = strings.Split(tag, " ")
+	ySlice = strings.Split(y, " ")
+	mSlice = strings.Split(m, " ")
+	tSlice = strings.Split(text, " ")
 
-	report(fileList, text, tag, y, m, v)
+	fileList = filterTag(fileList, tagSlice)
+	fileList = filterYear(fileList, ySlice)
+	fileList = filterMonth(fileList, mSlice)
+	fileList = filterText(fileList, tSlice)
+
+	report(fileList, tSlice, tagSlice, ySlice, mSlice, v)
 
 	return err
 }
 
-func filterTag(f []string, t string) []string {
+func filterTag(f []string, t []string) []string {
 
 	var fileList []string
 
@@ -50,28 +56,8 @@ func filterTag(f []string, t string) []string {
 		scanner := bufio.NewScanner(fo)
 
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "* tags:") == true && strings.Contains(scanner.Text(), t) == true {
-				fileList = append(fileList, file)
-			}
-		}
-	}
-
-	return fileList
-}
-
-func filterYear(f []string, y string) []string {
-
-	var fileList []string
-
-	for _, file := range f {
-		fo, _ := os.Open(file)
-
-		scanner := bufio.NewScanner(fo)
-
-		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "* date:") == true {
-				year := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]
-				if strings.Contains(year, y) == true {
+			for _, tt := range t {
+				if strings.Contains(scanner.Text(), "* tags:") == true && strings.Contains(scanner.Text(), tt) == true {
 					fileList = append(fileList, file)
 				}
 			}
@@ -81,7 +67,32 @@ func filterYear(f []string, y string) []string {
 	return fileList
 }
 
-func filterMonth(f []string, m string) []string {
+func filterYear(f []string, y []string) []string {
+
+	var fileList []string
+
+	for _, file := range f {
+		fo, _ := os.Open(file)
+
+		scanner := bufio.NewScanner(fo)
+
+		for scanner.Scan() {
+
+			if strings.Contains(scanner.Text(), "* date:") == true {
+				year := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]
+				for _, yy := range y {
+					if strings.Contains(year, yy) == true {
+						fileList = append(fileList, file)
+					}
+				}
+			}
+		}
+	}
+
+	return fileList
+}
+
+func filterMonth(f []string, m []string) []string {
 
 	var fileList []string
 
@@ -93,8 +104,10 @@ func filterMonth(f []string, m string) []string {
 		for scanner.Scan() {
 			if strings.Contains(scanner.Text(), "* date:") == true {
 				month := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1]
-				if strings.Contains(month, m) == true {
-					fileList = append(fileList, file)
+				for _, mm := range m {
+					if strings.Contains(month, mm) == true {
+						fileList = append(fileList, file)
+					}
 				}
 			}
 		}
@@ -103,20 +116,26 @@ func filterMonth(f []string, m string) []string {
 	return fileList
 }
 
-func filterText(f []string, t string) []string {
+func filterText(f []string, t []string) []string {
 
 	var fileList []string
 
 	for _, file := range f {
-		fo, _ := os.Open(file)
+
 		c := 0
+
+		fo, _ := os.Open(file)
+
 		scanner := bufio.NewScanner(fo)
 
 		for scanner.Scan() {
-			if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(t)) == true {
-				c++
+			for _, tt := range t {
+				if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(tt)) == true {
+					c++
+				}
 			}
 		}
+
 		if c > 0 {
 			fileList = append(fileList, file)
 		}
@@ -125,41 +144,32 @@ func filterText(f []string, t string) []string {
 	return fileList
 }
 
-func report(f []string, text string, tag string, y string, m string, v bool) {
+func report(f []string, text []string, tag []string, y []string, m []string, v bool) {
 	if len(f) > 0 {
 		for _, file := range f {
 
-			var output []string
-			var outputVerbose []string
-			var caseText []string
-			var outputCaseText []([]string)
+			var outputGrp, outputVerbose []string
+			var output []int
 
 			color.Green("Search criteria present in journal entry " + file)
 
 			f, _ := os.Open(file)
 			fc, _ := ioutil.ReadFile(file)
-			// if err != nil {
-			// 	return err
-			// }
 
 			scanner := bufio.NewScanner(f)
 
-			// tags := getTags(file)
-
 			line := 1
-			// c := 0
 
 			for scanner.Scan() {
-
-				// var output []string
-				// var outputVerbose []string
 
 				// TAGS
 
 				if len(tag) > 0 {
 					if strings.Contains(scanner.Text(), "tags:") == true {
-						if strings.Contains(strings.Split(scanner.Text(), ":")[1], tag) == true {
-							color.Cyan("Journal entry is tagged with " + tag)
+						for _, tt := range tag {
+							if strings.Contains(strings.Split(scanner.Text(), ":")[1], tt) == true && len(tt) != 0 {
+								color.Cyan("Journal entry is tagged with " + tt)
+							}
 						}
 					}
 				}
@@ -168,9 +178,11 @@ func report(f []string, text string, tag string, y string, m string, v bool) {
 
 				if len(y) > 0 {
 					if strings.Contains(scanner.Text(), "date:") == true {
-						year := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]
-						if strings.Contains(year, y) == true {
-							color.Cyan("Journal entry was created in the year " + year)
+						year := strings.TrimSpace(strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0])
+						for _, yy := range y {
+							if strings.Contains(year, yy) == true && len(yy) != 0 {
+								color.Cyan("Journal entry was created in the year " + year)
+							}
 						}
 					}
 				}
@@ -179,9 +191,11 @@ func report(f []string, text string, tag string, y string, m string, v bool) {
 
 				if len(m) > 0 {
 					if strings.Contains(scanner.Text(), "date:") == true {
-						month := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1]
-						if strings.Contains(month, m) == true {
-							color.Cyan("Journal entry was created in the month " + month)
+						month := strings.TrimSpace(strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1])
+						for _, mm := range m {
+							if strings.Contains(month, mm) == true && len(mm) != 0 {
+								color.Cyan("Journal entry was created in the month " + month)
+							}
 						}
 					}
 				}
@@ -189,35 +203,40 @@ func report(f []string, text string, tag string, y string, m string, v bool) {
 				// TEXT
 				// output is deferred to end of file processing as it will otherwise intersperse with tag, year and month output
 
-				if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(text)) == true && len(text) > 0 {
+				for _, tt := range text {
+					if strings.Contains(strings.ToUpper(scanner.Text()), strings.ToUpper(tt)) == true && len(tt) > 0 {
 
-					output = append(output, "Text is present on line "+strconv.Itoa(line))
+						output = append(output, line)
+						outputGrp = append(outputGrp, tt)
 
-					if v == true {
-						re := regexp.MustCompile("(?i)" + text)
-						caseText = re.FindAllString(scanner.Text(), -1)
-						coloredText := re.ReplaceAllLiteralString(scanner.Text(), "%[1]s")
-						outputVerbose = append(outputVerbose, coloredText)
-						outputCaseText = append(outputCaseText, caseText)
+						if v == true {
+							outputVerbose = append(outputVerbose, scanner.Text())
+						}
 					}
-
 				}
 
 				line++
 
 			}
 
+			// output for non-text searches with verbosity on
+
 			if v == true && len(output) == 0 {
 				fmt.Println(string(fc))
 			} else {
-				for i := 0; i < len(output); i++ {
-					color.Cyan(output[i])
-					if v == true && len(text) > 0 {
-						red := color.New(color.Bold, color.FgRed).SprintFunc()
-						fmt.Printf(outputVerbose[i], red(strings.ToUpper(text)))
-						fmt.Print("\n\n")
 
-						// fmt.Println(blue(fmt.Print(outputCaseText[i][0]), ","))
+				// output for text searches with verbosity on
+
+				for i := 0; i < len(output); i++ {
+
+					color.Cyan("Text " + outputGrp[i] + " is present on line " + strconv.Itoa(output[i]))
+
+					if v == true {
+						red := color.New(color.Bold, color.FgRed).SprintFunc()
+						re := regexp.MustCompile("(?i)" + outputGrp[i])
+						coloredText := re.ReplaceAllLiteralString(outputVerbose[i], "%[1]s")
+						fmt.Printf(coloredText, red(strings.ToUpper(outputGrp[i])))
+						fmt.Print("\n\n")
 					}
 				}
 			}
