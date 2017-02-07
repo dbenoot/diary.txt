@@ -17,20 +17,32 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"github.com/pmylund/sortutil"
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
-
-	"github.com/pmylund/sortutil"
 )
 
 func createEntry(wd string, title string, t string, tag string, pb bool, cp bool, p []string, c string) {
 
+	// check that t is in the correct format
+
+	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
+
+	if r.MatchString(t) == false {
+		fmt.Println("Datetime format is incorrect.")
+		os.Exit(1)
+	}
+
 	// Derive the year and month
 
-	y := strings.Split(t, "-")[0]
-	m := strings.Split(t, "-")[1]
+	y := t[0:4]
+	m := t[4:6]
+
+	fmt.Println(y)
+	fmt.Println(m)
 
 	//Check if the subdir for this year and month already exists. If not, create it.
 
@@ -40,10 +52,12 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 		_ = os.MkdirAll(dir, 0755)
 	}
 
+	// create filename
+
 	filename := t + "_" + title + ".md"
 	file := filepath.Join(dir, filename)
 
-	// Create the markdown file as YYYYMMDD-HHMM_title(if specified).md
+	// Create the markdown file as YYYYMMDDTHHMM_title(if specified).md
 	if _, err := os.Stat(file); err == nil {
 
 		fmt.Println("A journal entry for this date and time already exists.")

@@ -129,15 +129,18 @@ func render(location string, tag string, year string, month string) (err error) 
 	var m int
 	buf := bytes.NewBuffer(nil)
 	for _, file := range fileList {
-		if strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[0] != y {
-			y = strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[0]
+
+		filename := strings.Split(file, "/")[len(strings.Split(file, "/"))-1]
+
+		if filename[0:4] != y {
+			y = filename[0:4]
 			b := bytes.NewBufferString("# " + y + "\n")
 			io.Copy(buf, b)
 			m = 0
 		}
-
-		if strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[1] != strconv.Itoa(m) {
-			m, err = strconv.Atoi(strings.Split(strings.Split(file, "/")[len(strings.Split(file, "/"))-1], "-")[1])
+		mm, _ := strconv.Atoi(filename[4:6])
+		if mm != m {
+			m = mm
 			months := [...]string{"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"}
 			b := bytes.NewBufferString("## " + months[m-1] + "\n")
 			io.Copy(buf, b)

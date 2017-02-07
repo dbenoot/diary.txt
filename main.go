@@ -36,7 +36,7 @@ func main() {
 	// define variables
 
 	t := time.Now()
-	tStr := t.Format("2006-01-02T1504")
+	tStr := t.Format("20060102T1504")
 	tStrTitle := t.Format("02 January 2006")
 	var localCfgFile string
 

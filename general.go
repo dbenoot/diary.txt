@@ -42,7 +42,7 @@ func filterFile(f []string, wd string) []string {
 	//
 	// Remark the double escape for w, s and . -> otherwise the string parser complains (and '' didn't work...)
 
-	var r = regexp.MustCompile("[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{4}_['\\w,\\s-\\.]*\\.md")
+	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}_['\\w,\\s-\\.]*\\.md")
 	logdir := filepath.Join(wd, "logs")
 	renderdir := filepath.Join(wd, "rendered")
 	settingsdir := filepath.Join(wd, "settings")
