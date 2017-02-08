@@ -77,10 +77,14 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 			sortutil.CiAsc(fileList)
 
-			fmt.Printf("Pin content copied from %s \n", fileList[len(fileList)-2])
-			scanfile, _ := os.Open(fileList[len(fileList)-2])
+			lastfile := fileList[len(fileList)-2]
+
+			fmt.Printf("Pin content copied from %s \n", lastfile)
+			scanfile, _ := os.Open(lastfile)
 			scanner := bufio.NewScanner(scanfile)
+
 			var added []string
+
 			for scanner.Scan() {
 
 				for _, a := range p {
