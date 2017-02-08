@@ -55,7 +55,7 @@ func subselectYear(f []string, y string) []string {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			if strings.Contains(scanner.Text(), "date:") == true {
-				r := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]
+				r := getYear(scanner.Text())
 				if strings.Contains(r, y) {
 					list = append(list, f[i])
 				}
@@ -74,7 +74,7 @@ func subselectMonth(f []string, m string) []string {
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
 			if strings.Contains(scanner.Text(), "date:") == true {
-				r := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1]
+				r := getMonth(scanner.Text())
 				if strings.Contains(r, m) {
 					list = append(list, f[i])
 				}

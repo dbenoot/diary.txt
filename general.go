@@ -61,6 +61,23 @@ func filterFile(f []string, wd string) []string {
 	return fo
 }
 
+func getYear(y string) string {
+
+	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
+
+	y = r.FindString(y)
+
+	return y[0:4]
+}
+
+func getMonth(y string) string {
+
+	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
+
+	y = r.FindString(y)
+	return y[4:6]
+}
+
 func check(e error) {
 	if e != nil {
 		panic(e)

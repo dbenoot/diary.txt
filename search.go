@@ -79,7 +79,7 @@ func filterYear(f []string, y []string) []string {
 		for scanner.Scan() {
 
 			if strings.Contains(scanner.Text(), "* date:") == true {
-				year := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]
+				year := getYear(scanner.Text())
 				for _, yy := range y {
 					if strings.Contains(year, yy) == true {
 						fileList = append(fileList, file)
@@ -103,7 +103,7 @@ func filterMonth(f []string, m []string) []string {
 
 		for scanner.Scan() {
 			if strings.Contains(scanner.Text(), "* date:") == true {
-				month := strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1]
+				month := getMonth(scanner.Text())
 				for _, mm := range m {
 					if strings.Contains(month, mm) == true {
 						fileList = append(fileList, file)
@@ -178,7 +178,7 @@ func report(f []string, text []string, tag []string, y []string, m []string, v b
 
 				if len(y) > 0 {
 					if strings.Contains(scanner.Text(), "date:") == true {
-						year := strings.TrimSpace(strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0])
+						year := getYear(scanner.Text())
 						for _, yy := range y {
 							if strings.Contains(year, yy) == true && len(yy) != 0 {
 								color.Cyan("Journal entry was created in the year " + year)
@@ -191,7 +191,7 @@ func report(f []string, text []string, tag []string, y []string, m []string, v b
 
 				if len(m) > 0 {
 					if strings.Contains(scanner.Text(), "date:") == true {
-						month := strings.TrimSpace(strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1])
+						month := getMonth(scanner.Text())
 						for _, mm := range m {
 							if strings.Contains(month, mm) == true && len(mm) != 0 {
 								color.Cyan("Journal entry was created in the month " + month)

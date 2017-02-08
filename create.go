@@ -38,11 +38,8 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 	// Derive the year and month
 
-	y := t[0:4]
-	m := t[4:6]
-
-	fmt.Println(y)
-	fmt.Println(m)
+	y := getYear(t)
+	m := getMonth(t)
 
 	//Check if the subdir for this year and month already exists. If not, create it.
 

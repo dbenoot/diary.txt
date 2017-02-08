@@ -74,7 +74,7 @@ func statistics(wd string, t string) {
 
 				// get the amount of years
 
-				y, err = strconv.Atoi(strings.TrimSpace(strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[0]))
+				y, err = strconv.Atoi(getYear(scanner.Text()))
 
 				if year != y {
 					years++
@@ -84,7 +84,7 @@ func statistics(wd string, t string) {
 
 				// get the amount of months
 
-				m, err = strconv.Atoi(strings.TrimSpace(strings.Split(strings.Split(scanner.Text(), ":")[1], "-")[1]))
+				m, err = strconv.Atoi(getMonth(scanner.Text()))
 
 				if month != m {
 					months++
@@ -122,6 +122,8 @@ func statistics(wd string, t string) {
 
 	fmt.Printf("Statistics log created: %s \n", of)
 
+	fo.WriteString("Amount of years writing journal:   " + strconv.Itoa(years) + "\n")
+	fo.WriteString("Amount of months writing journal:  " + strconv.Itoa(months) + "\n")
 	fo.WriteString("Total amount of journal entries:   " + strconv.Itoa(entries) + "\n")
 	fo.WriteString("Averge entries per year:           " + strconv.Itoa(entries/years) + "\n")
 	fo.WriteString("Average entries per month:         " + strconv.Itoa(entries/months) + "\n")
