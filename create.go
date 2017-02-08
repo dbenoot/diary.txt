@@ -21,7 +21,6 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -29,10 +28,8 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 	// check that t is in the correct format
 
-	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
-
-	if r.MatchString(t) == false {
-		fmt.Println("Datetime format is incorrect.")
+	if checkDate(t) == false {
+		fmt.Println("Specified datetime format is incorrect.")
 		os.Exit(1)
 	}
 

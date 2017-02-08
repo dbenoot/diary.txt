@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -61,21 +62,75 @@ func filterFile(f []string, wd string) []string {
 	return fo
 }
 
-func getYear(y string) string {
-
+func checkDate(date string) bool {
 	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
 
-	y = r.FindString(y)
+	d, _ := strconv.Atoi(getDay(date))
+	m, _ := strconv.Atoi(getMonth(date))
+	y, _ := strconv.Atoi(getYear(date))
 
-	return y[0:4]
+	if r.MatchString(date) == true && date == r.FindString(date) && checkDay(d, m, y) == true && checkMonth(m) == true {
+		return true
+	}
+
+	return false
 }
 
-func getMonth(y string) string {
-
+func getYear(date string) string {
 	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
+	date = r.FindString(date)
+	return date[0:4]
+}
 
-	y = r.FindString(y)
-	return y[4:6]
+func getMonth(date string) string {
+	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
+	date = r.FindString(date)
+	return date[4:6]
+}
+
+func getDay(date string) string {
+	var r = regexp.MustCompile("[0-9]{4}[0-9]{2}[0-9]{2}T[0-9]{4}")
+	date = r.FindString(date)
+	return date[6:8]
+}
+
+func checkDay(day int, month int, year int) bool {
+
+	thirtyone := []int{1, 3, 5, 7, 8, 10, 12}
+	thirty := []int{4, 6, 9, 11}
+	feb := []int{2}
+
+	if contains(thirtyone, month) {
+		if day > 0 && day < 32 {
+			return true
+		}
+	}
+
+	if contains(thirty, month) {
+		if day > 0 && day < 31 {
+			return true
+		}
+	}
+
+	if contains(feb, month) {
+		if year%4 == 0 && year%100 != 0 || year%400 == 0 {
+			if day > 0 && day < 30 {
+				return true
+			}
+		} else {
+			if day > 0 && day < 29 {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func checkMonth(m int) bool {
+	if m > 0 && m < 13 {
+		return true
+	}
+	return false
 }
 
 func check(e error) {
@@ -110,4 +165,13 @@ func difference(slice1 []string, slice2 []string) []string {
 	}
 
 	return diff
+}
+
+func contains(s []int, e int) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }
