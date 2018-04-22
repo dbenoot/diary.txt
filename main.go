@@ -31,6 +31,7 @@ func main() {
 	type Diary struct {
 		wd   string
 		pins []string
+		copyPins bool
 	}
 
 	// define variables
@@ -44,7 +45,7 @@ func main() {
 
 	// check that the local config directory (sd) exists and if not create a preliminary config file
 
-	diary.wd = setWorkDir()
+	diary.wd, diary.copyPins = setWorkDir()
 
 	// Create and load diary specific config file (only the pins at this moment)
 	// This makes it possible to sync diary specific settings when using cloud sync, as this sync file is in the diary folder.
@@ -64,7 +65,7 @@ func main() {
 	textCreateFlag := createCommand.String("text", "", "Add text to the diary entry. Especially useful for short notes, for larger notes an editor is best used. Default is empty.")
 	tagCreateFlag := createCommand.String("tag", "", "Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
 	pinCreateFlag := createCommand.Bool("pin", true, "Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
-	pinCopyFlag := createCommand.Bool("copypin", false, "Copy pins contents from your most recent journal entry. Default is false.")
+	pinCopyFlag := createCommand.Bool("copypin", diary.copyPins, "Copy pins contents from your most recent journal entry. Default is set in local config file.")
 
 	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
 	verboseSearchFlag := searchCommand.Bool("v", false, "Set the output verbosity. Default is false.")
@@ -179,7 +180,7 @@ func main() {
 	}
 }
 
-func setWorkDir() string {
+func setWorkDir() (string, bool) {
 	usr, err := user.Current()
 	check(err)
 
@@ -201,7 +202,10 @@ func setWorkDir() string {
 		os.Exit(2)
 	}
 
-	return cfg.Section("general").Key("home").String()
+	copyPins, err := cfg.Section("general").Key("copy_pin_content").Bool()
+	check(err)
+
+	return cfg.Section("general").Key("home").String(), copyPins
 }
 
 func setPins(wd string) ([]string, string) {
@@ -226,8 +230,14 @@ func createDirs(wd string) {
 	if _, err := os.Stat(renderdir); os.IsNotExist(err) {
 		_ = os.MkdirAll(renderdir, 0755)
 	}
+
 	logdir := filepath.Join(wd, "logs")
 	if _, err := os.Stat(logdir); os.IsNotExist(err) {
 		_ = os.MkdirAll(logdir, 0755)
+	}
+
+	filedir := filepath.Join(wd, "files")
+	if _, err := os.Stat(filedir); os.IsNotExist(err) {
+		_ = os.MkdirAll(filedir, 0755)
 	}
 }
