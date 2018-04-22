@@ -192,6 +192,7 @@ func setWorkDir() (string, bool) {
 		os.Create(cfgFile)
 		var cfg, _ = ini.LooseLoad(cfgFile)
 		_, _ = cfg.Section("general").NewKey("home", "")
+		_, _ = cfg.Section("general").NewKey("copy_pin_content", "true")
 		err = cfg.SaveTo(cfgFile)
 	}
 
