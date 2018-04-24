@@ -29,21 +29,36 @@ import (
 	"fmt"
 	// "github.com/pmylund/sortutil"
 	// "io/ioutil"
-	// "os"
+	"os"
 	// "path/filepath"
 	// "strings"
 )
 
-func attach (i string, f string, e string) {
-  if len(e) == 0 {
-    fmt.Println("Please specify diary entry using the -entry flag.")
-  }
+func attach(i string, f string, e string) {
+	if len(e) == 0 {
+		fmt.Println("Please specify diary entry using the -entry flag.")
+	}
 
-  if len(i) > 0 {
-    fmt.Println("Image.")
-  }
+	if len(i) > 0 {
 
-  if len(f) > 0 {
-    fmt.Println("File.")
-  }
+		checkfile(i)
+
+		fmt.Println("Image.")
+	}
+
+	if len(f) > 0 {
+
+		checkfile(f)
+
+		fmt.Println("File.")
+	}
+}
+
+func checkfile(name string) {
+	if _, err := os.Stat(name); err != nil {
+		if os.IsNotExist(err) {
+			fmt.Println("File does not exists. Please check path.")
+			os.Exit(2)
+		}
+	}
 }
