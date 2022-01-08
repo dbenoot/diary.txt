@@ -123,7 +123,7 @@ func autotag(vars []string, wd string) {
 
 			for t := range tags {
 				if strings.Contains(strings.ToLower(cntStr), strings.ToLower(t)) {
-					newTags = newTags + strings.ToLower(t) + " "
+					newTags = newTags + strings.ToLower(t) + ", "
 				}
 			}
 			newContent := strings.Replace(cntStr, "* tags:", "* tags: "+newTags, 1)
