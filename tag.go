@@ -24,13 +24,11 @@ import (
 	"github.com/fatih/color"
 )
 
-func tag(i bool, l string, sd string, v bool) {
-
+func getTags(sd string) (map[string]int, map[string][]string) {
+	// get all the filenames
 	tags := make(map[string]int)
 	tagFiles := make(map[string][]string)
 	var err error
-
-	// get all the filenames
 
 	fileList := []string{}
 	fileList, err = getFileList(sd)
@@ -55,6 +53,14 @@ func tag(i bool, l string, sd string, v bool) {
 			}
 		}
 	}
+	return tags, tagFiles
+}
+
+func tag(i bool, l string, sd string, v bool) {
+
+	var err error
+
+	tags, tagFiles := getTags(sd)
 
 	// process index command
 
@@ -95,4 +101,35 @@ func tag(i bool, l string, sd string, v bool) {
 	// return errors
 
 	check(err)
+}
+
+func autotag(vars []string, wd string) {
+
+	var err error
+	var newTags string
+
+	fileList := []string{}
+	fileList, err = getFileList(wd)
+	check(err)
+
+	tags, _ := getTags(wd)
+
+	for _, f := range fileList {
+		if strings.Contains(f, vars[0]) {
+			content, err := ioutil.ReadFile(f)
+			check(err)
+
+			cntStr := string(content)
+
+			for t := range tags {
+				if strings.Contains(strings.ToLower(cntStr), strings.ToLower(t)) {
+					newTags = newTags + strings.ToLower(t) + " "
+				}
+			}
+			newContent := strings.Replace(cntStr, "* tags:", "* tags: "+newTags, 1)
+
+			err = ioutil.WriteFile(f, []byte(newContent), 0644)
+			check(err)
+		}
+	}
 }

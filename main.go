@@ -125,6 +125,8 @@ func main() {
 			printHelp()
 		case "attach":
 			attachCommand.Parse(os.Args[2:])
+		case "autotag":
+			autotag(os.Args[2:], diary.wd)
 		default:
 			fmt.Printf("%q is not valid command.\n", os.Args[1])
 			fmt.Println("Use the help command 'diarytxt help' for help.")
@@ -255,6 +257,8 @@ func printHelp() {
 	fmt.Println("  -index        Shows all tags.")
 	fmt.Println("  -list         Shows all journal entries for a specific tag.")
 	fmt.Println("  -v            Set the output verbosity. Default is false.")
+	fmt.Println("")
+	fmt.Println("autotag [date]  Checks the content of the text for words that have been tagged before and adds these to the tags list.")
 	fmt.Println("")
 	fmt.Println("pin             Administrate the journal pins.")
 	fmt.Println("  -add          Add a pin. Default is empty.")
