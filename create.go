@@ -71,8 +71,7 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 		if cp {
 
-			fileList := []string{}
-
+			var fileList []string
 			fileList, err = getFileList(wd)
 			check(err)
 
