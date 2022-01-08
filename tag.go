@@ -30,7 +30,7 @@ func getTags(sd string) (map[string]int, map[string][]string) {
 	tagFiles := make(map[string][]string)
 	var err error
 
-	fileList := []string{}
+	var fileList []string
 	fileList, err = getFileList(sd)
 	check(err)
 
@@ -108,7 +108,7 @@ func autotag(vars []string, wd string) {
 	var err error
 	var newTags string
 
-	fileList := []string{}
+	var fileList []string
 	fileList, err = getFileList(wd)
 	check(err)
 

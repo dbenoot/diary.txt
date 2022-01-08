@@ -75,7 +75,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 
 	if ia {
 
-		fileList := []string{}
+		var fileList []string
 		fileList, err = getFileList(sd)
 
 		color.Green("Full index of the specified pins and their unique values:")
@@ -111,7 +111,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 
 	if len(l) > 0 {
 
-		fileList := []string{}
+		var fileList []string
 		fileList, err = getFileList(sd)
 
 		var index []string

@@ -35,7 +35,7 @@ func statistics(wd string, t string) {
 	var f []string
 	var superstring string
 	var pintags = regexp.MustCompile(`\*\s\w+:`)
-	wc := make(map[string]int)
+	var wc map[string]int
 	tagsMap := make(map[string]int)
 
 	of := filepath.Join(wd, "logs", "statistics_"+t+".txt")

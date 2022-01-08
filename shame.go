@@ -28,7 +28,7 @@ import (
 )
 
 func shame(wd string) {
-	fileList := []string{}
+	var fileList []string
 
 	fileList, _ = getFileList(wd)
 	//check(err)

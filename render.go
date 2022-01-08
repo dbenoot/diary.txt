@@ -104,8 +104,9 @@ func render(location string, tag string, year string, month string) (err error) 
 
 	// create fileList of all .md files
 
-	fileList := []string{}
+	var fileList []string
 	fileList, err = getFileList(location)
+	check(err)
 
 	// sort the fileList alphabetically
 
