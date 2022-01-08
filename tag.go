@@ -66,8 +66,7 @@ func tag(i bool, l string, sd string, v bool) {
 
 		keys := make(map[string]int)
 
-		for tag, _ := range tags {
-			///keys[tag] = tags[tag]
+		for tag := range tags {
 			keys[tag] = tags[tag]
 		}
 
