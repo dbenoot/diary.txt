@@ -17,18 +17,19 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/pmylund/sortutil"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/pmylund/sortutil"
 )
 
 func createEntry(wd string, title string, t string, tag string, pb bool, cp bool, p []string, c string) {
 
 	// check that t is in the correct format
 
-	if checkDate(t) == false {
+	if !checkDate(t) {
 		fmt.Println("Specified datetime format is incorrect.")
 		os.Exit(1)
 	}
@@ -68,7 +69,7 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 		// copy pins content from previous entry, if applicable
 
-		if cp == true {
+		if cp {
 
 			fileList := []string{}
 
@@ -89,7 +90,7 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 				for _, a := range p {
 
-					if strings.Contains(scanner.Text(), "* "+a+":") == true {
+					if strings.Contains(scanner.Text(), "* "+a+":") {
 						content = content + "\n" + scanner.Text()
 						added = append(added, a)
 					}
@@ -106,7 +107,7 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 		// add pins if applicable
 
-		if pb == true && len(p) > 0 && cp == false {
+		if pb && len(p) > 0 && !cp {
 			for i := 0; i < len(p); i++ {
 				content = content + "\n* " + p[i] + ":"
 			}

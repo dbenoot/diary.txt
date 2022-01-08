@@ -49,11 +49,11 @@ func filterFile(f []string, wd string) []string {
 	settingsdir := filepath.Join(wd, "settings")
 
 	for _, file := range f {
-		if r.MatchString(file) && strings.Contains(file, renderdir) == false { //&& strings.Contains(file, ".md") {
+		if r.MatchString(file) && !strings.Contains(file, renderdir) { //&& strings.Contains(file, ".md") {
 			fo = append(fo, file)
 		} else {
 			fi, _ := os.Stat(file)
-			if fi.Mode().IsRegular() == true && strings.Contains(file, renderdir) == false && strings.Contains(file, logdir) == false && strings.Contains(file, settingsdir) == false {
+			if fi.Mode().IsRegular() && !strings.Contains(file, renderdir) && !strings.Contains(file, logdir) && !strings.Contains(file, settingsdir) {
 				fmt.Printf("File was not included in the filterlist %s. Please check filterFile function. \n", file)
 			}
 		}
@@ -69,7 +69,7 @@ func checkDate(date string) bool {
 	m, _ := strconv.Atoi(getMonth(date))
 	y, _ := strconv.Atoi(getYear(date))
 
-	if r.MatchString(date) == true && date == r.FindString(date) && checkDay(d, m, y) == true && checkMonth(m) == true {
+	if r.MatchString(date) && date == r.FindString(date) && checkDay(d, m, y) && checkMonth(m) {
 		return true
 	}
 

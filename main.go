@@ -17,11 +17,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/go-ini/ini"
 	"os"
 	"os/user"
 	"path/filepath"
 	"time"
+
+	"github.com/go-ini/ini"
 )
 
 func main() {
@@ -29,8 +30,8 @@ func main() {
 	// define Diary
 
 	type Diary struct {
-		wd   string
-		pins []string
+		wd       string
+		pins     []string
 		copyPins bool
 	}
 
@@ -171,7 +172,9 @@ func setWorkDir() string {
 		var cfg, _ = ini.LooseLoad(cfgFile)
 		_, _ = cfg.Section("general").NewKey("home", "")
 		err = cfg.SaveTo(cfgFile)
+		check(err)
 	}
+	check(err)
 
 	var cfg, _ = ini.LooseLoad(cfgFile)
 
@@ -179,7 +182,6 @@ func setWorkDir() string {
 		fmt.Printf("Home directory not set, please add to config.ini. Config file is located here: %s \n", sd)
 		os.Exit(2)
 	}
-
 
 	// check(err)
 
@@ -190,8 +192,6 @@ func setPins(wd string) ([]string, string, bool) {
 	settingsDir := filepath.Join(wd, "settings")
 	localCfgFile := filepath.Join(settingsDir, "local_config.ini")
 
-
-
 	if _, err := os.Stat(localCfgFile); os.IsNotExist(err) {
 		_ = os.MkdirAll(settingsDir, 0755)
 		os.Create(localCfgFile)
@@ -199,6 +199,7 @@ func setPins(wd string) ([]string, string, bool) {
 		_, _ = localCfg.Section("general").NewKey("pins", "")
 		_, _ = localCfg.Section("general").NewKey("copy_pin_content", "true")
 		err = localCfg.SaveTo(localCfgFile)
+		check(err)
 	}
 
 	var localCfg, _ = ini.LooseLoad(localCfgFile)

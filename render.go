@@ -17,7 +17,6 @@ package main
 import (
 	"bufio"
 	"bytes"
-	"github.com/russross/blackfriday"
 	"io"
 	"io/ioutil"
 	"os"
@@ -25,6 +24,8 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+
+	"github.com/russross/blackfriday"
 )
 
 func subselectTag(f []string, t string) []string {
@@ -34,7 +35,7 @@ func subselectTag(f []string, t string) []string {
 		file, _ := os.Open(f[i])
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "tags:") == true {
+			if strings.Contains(scanner.Text(), "tags:") {
 				r := strings.Split(scanner.Text(), ":")[1]
 				if strings.Contains(r, t) {
 					list = append(list, f[i])
@@ -54,7 +55,7 @@ func subselectYear(f []string, y string) []string {
 		file, _ := os.Open(f[i])
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "date:") == true {
+			if strings.Contains(scanner.Text(), "date:") {
 				r := getYear(scanner.Text())
 				if strings.Contains(r, y) {
 					list = append(list, f[i])
@@ -73,7 +74,7 @@ func subselectMonth(f []string, m string) []string {
 		file, _ := os.Open(f[i])
 		scanner := bufio.NewScanner(file)
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "date:") == true {
+			if strings.Contains(scanner.Text(), "date:") {
 				r := getMonth(scanner.Text())
 				if strings.Contains(r, m) {
 					list = append(list, f[i])
@@ -153,6 +154,7 @@ func render(location string, tag string, year string, month string) (err error) 
 		f.Close()
 	}
 	err = ioutil.WriteFile(ef, buf.Bytes(), 0644)
+	check(err)
 
 	// Create HTML
 
@@ -167,6 +169,7 @@ func render(location string, tag string, year string, month string) (err error) 
 	io.Copy(html, htmlEnd)
 
 	err = ioutil.WriteFile(hf, html.Bytes(), 0644)
+	check(err)
 
 	return err
 

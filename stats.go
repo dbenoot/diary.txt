@@ -64,17 +64,18 @@ func statistics(wd string, t string) {
 
 			// add text in the superstring
 
-			if pintags.MatchString(scanner.Text()) != true {
+			if !pintags.MatchString(scanner.Text()) {
 				superstring = superstring + scanner.Text() + "\n"
 			}
 
 			// date operations
 
-			if strings.Contains(scanner.Text(), "* date:") == true {
+			if !strings.Contains(scanner.Text(), "* date:") {
 
 				// get the amount of years
 
 				y, err = strconv.Atoi(getYear(scanner.Text()))
+				check(err)
 
 				if year != y {
 					years++
@@ -96,7 +97,7 @@ func statistics(wd string, t string) {
 
 			// tag operations: total amount of tags
 
-			if strings.Contains(scanner.Text(), "* tags:") == true {
+			if strings.Contains(scanner.Text(), "* tags:") {
 				t := strings.TrimSpace(strings.Replace(scanner.Text(), "* tags:", "", -1))
 				if len(t) != 0 {
 					ts := strings.Split(t, ",")
@@ -168,7 +169,7 @@ func wordcount(s string) (map[string]int, int) {
 		// remove unwanted symbols
 
 		for _, us := range unwantedSymbols {
-			if strings.ContainsAny(substrs[a], us) == true {
+			if strings.ContainsAny(substrs[a], us) {
 				substrs[a] = strings.Replace(substrs[a], us, "", -1)
 			}
 		}

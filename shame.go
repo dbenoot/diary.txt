@@ -17,7 +17,9 @@ package main
 import (
 	"bufio"
 	"fmt"
+
 	"github.com/pmylund/sortutil"
+
 	//"io/ioutil"
 	"os"
 	//"path/filepath"
@@ -42,7 +44,7 @@ func shame(wd string) {
 
 	for scanner.Scan() {
 
-		if strings.Contains(scanner.Text(), "* date: ") == true {
+		if strings.Contains(scanner.Text(), "* date: ") {
 			lastDate, _ = time.Parse("20060102T1504", strings.TrimSpace(strings.Split(scanner.Text(), ":")[1]))
 			//fmt.Println(lastDate)
 		}

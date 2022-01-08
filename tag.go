@@ -17,11 +17,12 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"github.com/fatih/color"
-	"github.com/pmylund/sortutil"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"github.com/fatih/color"
+	"github.com/pmylund/sortutil"
 )
 
 func tag(i bool, l string, sd string, v bool) {
@@ -42,7 +43,7 @@ func tag(i bool, l string, sd string, v bool) {
 		f, _ := os.Open(file)
 		scanner := bufio.NewScanner(f)
 		for scanner.Scan() {
-			if strings.Contains(scanner.Text(), "tags:") == true {
+			if strings.Contains(scanner.Text(), "tags:") {
 				t := strings.TrimSpace(strings.Replace(scanner.Text(), "* tags:", "", -1))
 				if len(t) != 0 {
 					ts := strings.Split(t, ",")
@@ -58,7 +59,7 @@ func tag(i bool, l string, sd string, v bool) {
 
 	// process index command
 
-	if i == true {
+	if i {
 
 		color.Green("Full index of the used tags and times used:")
 
@@ -85,9 +86,9 @@ func tag(i bool, l string, sd string, v bool) {
 	if len(l) != 0 {
 		if len(tagFiles[l]) != 0 {
 			color.Green("The tag %s was used in the following files:", l)
-			for a, _ := range tagFiles[l] {
+			for a := range tagFiles[l] {
 				color.Cyan(tagFiles[l][a])
-				if v == true {
+				if v {
 					fc, _ := ioutil.ReadFile(tagFiles[l][a])
 					fmt.Println(string(fc))
 				}

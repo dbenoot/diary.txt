@@ -17,11 +17,12 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"os"
+	"strings"
+
 	"github.com/fatih/color"
 	"github.com/go-ini/ini"
 	"github.com/pmylund/sortutil"
-	"os"
-	"strings"
 )
 
 func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string, cfgFile string, args []string) {
@@ -43,7 +44,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 	if len(r) > 0 {
 		var p string
 
-		if stringInSlice(r, pins) == false {
+		if !stringInSlice(r, pins) {
 			fmt.Printf("Pin '%s' not defined.\n", r)
 		} else {
 			var cfg, _ = ini.LooseLoad(cfgFile)
@@ -65,14 +66,14 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 		}
 	}
 
-	if i == true {
+	if i {
 		color.Green("Specified pins:")
 		for i := range pins {
 			fmt.Println(pins[i])
 		}
 	}
 
-	if ia == true {
+	if ia {
 
 		fileList := []string{}
 		fileList, err = getFileList(sd)
@@ -89,7 +90,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 				scanner := bufio.NewScanner(fo)
 
 				for scanner.Scan() {
-					if strings.Contains(scanner.Text(), "* "+pins[i]+":") == true {
+					if strings.Contains(scanner.Text(), "* "+pins[i]+":") {
 						item := strings.TrimSpace(strings.Replace(scanner.Text(), "* "+pins[i]+":", "", -1))
 						if len(item) > 0 {
 							index = AppendIfMissing(index, item)
@@ -127,11 +128,11 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 
 			for scanner.Scan() {
 
-				if strings.Contains(scanner.Text(), "* date:") == true {
+				if strings.Contains(scanner.Text(), "* date:") {
 					d = strings.TrimSpace(strings.Replace(scanner.Text(), "* date:", "", -1))
 				}
 
-				if strings.Contains(scanner.Text(), "* "+l+":") == true {
+				if strings.Contains(scanner.Text(), "* "+l+":") {
 					item := strings.TrimSpace(strings.Replace(scanner.Text(), "* "+l+":", "", 1))
 					if len(item) > 0 {
 						index = append(index, item)
