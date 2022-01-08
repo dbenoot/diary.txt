@@ -22,7 +22,6 @@ import (
 	"strings"
 
 	"github.com/fatih/color"
-	"github.com/pmylund/sortutil"
 )
 
 func tag(i bool, l string, sd string, v bool) {
@@ -63,21 +62,17 @@ func tag(i bool, l string, sd string, v bool) {
 
 		color.Green("Full index of the used tags and times used:")
 
-		// sort alphabetically
+		// sort numerically
 
-		var keys []string
-		for k := range tags {
-			keys = append(keys, k)
+		keys := make(map[string]int)
+
+		for tag, _ := range tags {
+			///keys[tag] = tags[tag]
+			keys[tag] = tags[tag]
 		}
 
-		sortutil.CiAsc(keys)
-
-		// report based on alphabetical slice
-
-		for _, k := range keys {
-			if k != "" {
-				fmt.Println(k, "\t", tags[k])
-			}
+		for _, nr := range rankByWordCount(keys) {
+			fmt.Println(nr.Value, "time(s) used\t: ", nr.Key)
 		}
 	}
 
