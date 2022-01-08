@@ -92,10 +92,6 @@ func main() {
 	indexAllPinFlag := pinCommand.Bool("indexall", false, "Shows all prespecifed pins with their distinct answers.")
 	listPinFlag := pinCommand.String("list", "", "Shows all items for a specific pin.")
 
-	attachCommand := flag.NewFlagSet("attach", flag.ExitOnError)
-	attachImageFlag := attachCommand.String("image", "", "Insert an image.")
-	attachFileFlag := attachCommand.String("file", "", "Attach a file.")
-	attachEntryFlag := attachCommand.String("entry", "", "Entry to which the attachment should be attached.")
 	// What to show when no arguments are defined
 
 	if len(os.Args) == 1 {
@@ -123,8 +119,6 @@ func main() {
 			shame(diary.wd)
 		case "help":
 			printHelp()
-		case "attach":
-			attachCommand.Parse(os.Args[2:])
 		case "autotag":
 			autotag(os.Args[2:], diary.wd)
 		default:
@@ -156,9 +150,6 @@ func main() {
 		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, diary.pins, localCfgFile, os.Args)
 	}
 
-	if attachCommand.Parsed() {
-		attach(*attachImageFlag, *attachFileFlag, *attachEntryFlag)
-	}
 }
 
 func setWorkDir() string {
@@ -184,8 +175,6 @@ func setWorkDir() string {
 		fmt.Printf("Home directory not set, please add to config.ini. Config file is located here: %s \n", sd)
 		os.Exit(2)
 	}
-
-	// check(err)
 
 	return cfg.Section("general").Key("home").String()
 }
@@ -269,8 +258,4 @@ func printHelp() {
 	fmt.Println("")
 	fmt.Println("stat            Some basic statistics about your diary. Output is saved in the logs folder in your diary home directory.")
 	fmt.Println("")
-	fmt.Println("attach          Attach images and files to a diary entry. File is linked in the diary entry and the file is saved locally in the diary folder.")
-	fmt.Println("  -image        Insert an image in the markdown file. Will be rendered as an image.")
-	fmt.Println("  -file         Attach a file to the diary entry. Will be rendered as a link.")
-
 }
