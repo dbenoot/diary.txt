@@ -156,7 +156,7 @@ func setWorkDir() string {
 	usr, err := user.Current()
 	check(err)
 
-	sd := filepath.Join(usr.HomeDir, ".diarytxt")
+	sd := filepath.Join(usr.HomeDir, ".config", "diarytxt")
 	cfgFile := filepath.Join(sd, "config.ini")
 
 	if _, err := os.Stat(cfgFile); os.IsNotExist(err) {
