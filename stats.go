@@ -70,7 +70,7 @@ func statistics(wd string, t string) {
 
 			// date operations
 
-			if !strings.Contains(scanner.Text(), "* date:") {
+			if strings.Contains(scanner.Text(), "* date:") {
 
 				// get the amount of years
 
