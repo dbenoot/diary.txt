@@ -20,6 +20,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-ini/ini"
@@ -43,6 +44,12 @@ func main() {
 	var localCfgFile string
 
 	diary := Diary{}
+
+	// Setup the diary home directory
+
+	if len(os.Args) > 1 && os.Args[1] == "setup" {
+		saveWorkDir(strings.Join(os.Args[2:], " "))
+	}
 
 	// check that the local config directory (sd) exists and if not create a preliminary config file
 
@@ -121,6 +128,8 @@ func main() {
 			printHelp()
 		case "autotag":
 			autotag(os.Args[2:], diary.wd)
+		case "setup":
+			fmt.Println("Setup done.")
 		default:
 			fmt.Printf("%q is not valid command.\n", os.Args[1])
 			fmt.Println("Use the help command 'diarytxt help' for help.")
@@ -177,6 +186,25 @@ func setWorkDir() string {
 	}
 
 	return cfg.Section("general").Key("home").String()
+}
+
+func saveWorkDir(workdir string) {
+
+	usr, err := user.Current()
+	check(err)
+
+	sd := filepath.Join(usr.HomeDir, ".config", "diarytxt")
+	cfgFile := filepath.Join(sd, "config.ini")
+
+	if _, err := os.Stat(cfgFile); os.IsNotExist(err) {
+		_ = os.MkdirAll(sd, 0755)
+		os.Create(cfgFile)
+		var cfg, _ = ini.LooseLoad(cfgFile)
+		_, _ = cfg.Section("general").NewKey("home", workdir)
+		err = cfg.SaveTo(cfgFile)
+		fmt.Println("HERE")
+		check(err)
+	}
 }
 
 func setPins(wd string) ([]string, string, bool) {
@@ -257,5 +285,7 @@ func printHelp() {
 	fmt.Println("  -list         Shows all items for a specific pin.")
 	fmt.Println("")
 	fmt.Println("stat            Some basic statistics about your diary. Output is saved in the logs folder in your diary home directory.")
+	fmt.Println("")
+	fmt.Println("setup           Setup the diary home directory.")
 	fmt.Println("")
 }
