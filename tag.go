@@ -17,7 +17,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"strings"
 
@@ -89,7 +88,7 @@ func tag(i bool, l string, sd string, v bool) {
 			for a := range tagFiles[l] {
 				color.Cyan(tagFiles[l][a])
 				if v {
-					fc, _ := ioutil.ReadFile(tagFiles[l][a])
+					fc, _ := os.ReadFile(tagFiles[l][a])
 					fmt.Println(string(fc))
 				}
 			}
@@ -106,6 +105,7 @@ func tag(i bool, l string, sd string, v bool) {
 func autotag(vars []string, wd string) {
 
 	var err error
+	var tagList []string
 	var newTags string
 
 	var fileList []string
@@ -114,22 +114,70 @@ func autotag(vars []string, wd string) {
 
 	tags, _ := getTags(wd)
 
+	// iterate over the files and select the file with the correct search string
+	// afterwards iterate over the tags and check if they are present in the list of tags.
+
 	for _, f := range fileList {
 		if strings.Contains(f, vars[0]) {
-			content, err := ioutil.ReadFile(f)
+			content, err := os.ReadFile(f)
 			check(err)
 
 			cntStr := string(content)
 
 			for t := range tags {
 				if strings.Contains(strings.ToLower(cntStr), strings.ToLower(t)) {
-					newTags = newTags + strings.ToLower(t) + ", "
+					tagList = append(tagList, strings.ToLower(t))
+					//newTags = newTags + strings.ToLower(t) + ", "
 				}
 			}
+
+			// Remove the duplicates in the taglist and output the string slice as a comma-separated string
+
+			tagList = removeDuplicates(tagList)
+			newTags = stringSliceToString(tagList)
+
+			// Replace the empty tags field with the completed tags field
+
 			newContent := strings.Replace(cntStr, "* tags:", "* tags: "+newTags, 1)
 
-			err = ioutil.WriteFile(f, []byte(newContent), 0644)
+			// Write the file
+
+			err = os.WriteFile(f, []byte(newContent), 0644)
 			check(err)
 		}
 	}
+}
+
+func removeDuplicates(slice []string) []string {
+
+	// Create a map to store unique elements
+
+	seen := make(map[string]bool)
+	result := []string{}
+
+	// Loop through the slice, adding elements to the map if they haven't been seen before
+
+	for _, val := range slice {
+		if _, ok := seen[val]; !ok {
+			seen[val] = true
+			result = append(result, val)
+		}
+	}
+	return result
+}
+
+func stringSliceToString(slice []string) string {
+	var nt string
+
+	// Iterate over the slice and add to string, adding a comma in between iterations
+
+	for _, tl := range slice {
+		nt = nt + tl + ", "
+	}
+
+	// Remove the last trailing comma
+
+	nt = strings.TrimSuffix(nt, ", ")
+
+	return nt
 }
