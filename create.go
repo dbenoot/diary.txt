@@ -17,7 +17,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -120,7 +119,7 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 
 		// write the file
 
-		err := ioutil.WriteFile(file, []byte(content), 0644)
+		err := os.WriteFile(file, []byte(content), 0644)
 		check(err)
 
 	}

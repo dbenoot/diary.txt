@@ -106,7 +106,6 @@ func autotag(vars []string, wd string) {
 
 	var err error
 	var tagList []string
-	var newTags string
 
 	var fileList []string
 	fileList, err = getFileList(wd)
@@ -126,19 +125,13 @@ func autotag(vars []string, wd string) {
 
 			for t := range tags {
 				if strings.Contains(strings.ToLower(cntStr), strings.ToLower(t)) {
-					tagList = append(tagList, strings.ToLower(t))
-					//newTags = newTags + strings.ToLower(t) + ", "
+					tagList = AppendIfMissing(tagList, strings.ToLower(t))
 				}
 			}
 
-			// Remove the duplicates in the taglist and output the string slice as a comma-separated string
-
-			tagList = removeDuplicates(tagList)
-			newTags = stringSliceToString(tagList)
-
 			// Replace the empty tags field with the completed tags field
 
-			newContent := strings.Replace(cntStr, "* tags:", "* tags: "+newTags, 1)
+			newContent := strings.Replace(cntStr, "* tags:", "* tags: "+stringSliceToString(tagList), 1)
 
 			// Write the file
 
@@ -146,24 +139,6 @@ func autotag(vars []string, wd string) {
 			check(err)
 		}
 	}
-}
-
-func removeDuplicates(slice []string) []string {
-
-	// Create a map to store unique elements
-
-	seen := make(map[string]bool)
-	result := []string{}
-
-	// Loop through the slice, adding elements to the map if they haven't been seen before
-
-	for _, val := range slice {
-		if _, ok := seen[val]; !ok {
-			seen[val] = true
-			result = append(result, val)
-		}
-	}
-	return result
 }
 
 func stringSliceToString(slice []string) string {
