@@ -18,13 +18,16 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
+	"os/user"
 	"path/filepath"
 	"strings"
 
+	"github.com/go-ini/ini"
 	"github.com/pmylund/sortutil"
 )
 
-func createEntry(wd string, title string, t string, tag string, pb bool, cp bool, p []string, c string) {
+func createEntry(wd string, title string, t string, tag string, pb bool, cp bool, p []string, c string, e bool) {
 
 	// check that t is in the correct format
 
@@ -122,5 +125,28 @@ func createEntry(wd string, title string, t string, tag string, pb bool, cp bool
 		err := os.WriteFile(file, []byte(content), 0644)
 		check(err)
 
+		if e {
+			editor := getEditor()
+
+			cmd := exec.Command(editor, file)
+
+			cmd.Stdin = os.Stdin
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+
+			cmd.Start()
+			cmd.Wait()
+		}
 	}
+}
+
+func getEditor() string {
+	usr, err := user.Current()
+	check(err)
+
+	sd := filepath.Join(usr.HomeDir, ".config", "diarytxt")
+	cfgFile := filepath.Join(sd, "config.ini")
+	var cfg, _ = ini.LooseLoad(cfgFile)
+
+	return cfg.Section("general").Key("editor").String()
 }

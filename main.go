@@ -74,6 +74,7 @@ func main() {
 	tagCreateFlag := createCommand.String("tag", "", "Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
 	pinCreateFlag := createCommand.Bool("pin", true, "Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
 	pinCopyFlag := createCommand.Bool("copypin", diary.copyPins, "Copy pins contents from your most recent journal entry. Default is set in local config file.")
+	createOpenEditorFlag := createCommand.Bool("e", false, "Open the created diary entry in the editor defined in the confid file.")
 
 	searchCommand := flag.NewFlagSet("search", flag.ExitOnError)
 	verboseSearchFlag := searchCommand.Bool("v", false, "Set the output verbosity. Default is false.")
@@ -140,7 +141,7 @@ func main() {
 	// Parse commands
 
 	if createCommand.Parsed() {
-		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, *tagCreateFlag, *pinCreateFlag, *pinCopyFlag, diary.pins, *textCreateFlag)
+		createEntry(diary.wd, *titleCreateFlag, *dateCreateFlag, *tagCreateFlag, *pinCreateFlag, *pinCopyFlag, diary.pins, *textCreateFlag, *createOpenEditorFlag)
 	}
 
 	if searchCommand.Parsed() {
@@ -173,6 +174,7 @@ func setWorkDir() string {
 		os.Create(cfgFile)
 		var cfg, _ = ini.LooseLoad(cfgFile)
 		_, _ = cfg.Section("general").NewKey("home", "")
+		_, _ = cfg.Section("general").NewKey("editor", "")
 		err = cfg.SaveTo(cfgFile)
 		check(err)
 	}
@@ -201,8 +203,8 @@ func saveWorkDir(workdir string) {
 		os.Create(cfgFile)
 		var cfg, _ = ini.LooseLoad(cfgFile)
 		_, _ = cfg.Section("general").NewKey("home", workdir)
+		_, _ = cfg.Section("general").NewKey("editor", "")
 		err = cfg.SaveTo(cfgFile)
-		fmt.Println("HERE")
 		check(err)
 	}
 }
@@ -257,6 +259,7 @@ func printHelp() {
 	fmt.Println("  -tag          Add tags (comma-separated) to journal entry. Can also be added using editor. Default is empty.")
 	fmt.Println("  -pin          Specify if the pins should be present. Notation example: -pin=false (include equal sign). Default is true.")
 	fmt.Println("  -copypin      Copies the pin content from the last written journal entry.")
+	fmt.Println("  -e            Open the newly created diary entry in the external editor defined in the config file.")
 	fmt.Println("")
 	fmt.Println("render          Renders your diary entries to a single markdown and html document located in the rendered folder in your diary home directory.")
 	fmt.Println("  -tag          Render journal entries with a specific tag. Default is empty.")
