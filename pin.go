@@ -29,7 +29,9 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 
 	var err error
 
-	if len(a) > 0 {
+	switch {
+	// ADD PIN
+	case len(a) > 0:
 		var cfg, _ = ini.LooseLoad(cfgFile)
 		p := cfg.Section("general").Key("pins").String()
 		if len(p) == 0 {
@@ -39,9 +41,8 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 		}
 		_, _ = cfg.Section("general").NewKey("pins", p)
 		err = cfg.SaveTo(cfgFile)
-	}
-
-	if len(r) > 0 {
+	// Remove a pin & TODO add it to a section archived_pins in the config file
+	case len(r) > 0:
 		var p string
 
 		if !stringInSlice(r, pins) {
@@ -64,17 +65,14 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 			_, _ = cfg.Section("general").NewKey("pins", p)
 			err = cfg.SaveTo(cfgFile)
 		}
-	}
-
-	if i {
+	// Index of pins
+	case i:
 		color.Green("Specified pins:")
 		for i := range pins {
 			fmt.Println(pins[i])
 		}
-	}
-
-	if ia {
-
+	// Indexall: list of pins and the contents
+	case ia:
 		var fileList []string
 		fileList, err = getFileList(sd)
 
@@ -107,10 +105,8 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 				}
 			}
 		}
-	}
-
-	if len(l) > 0 {
-
+	// List function: shows all diary entries with a specific pin
+	case len(l) > 0:
 		var fileList []string
 		fileList, err = getFileList(sd)
 
@@ -156,6 +152,10 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 				fmt.Printf("%v \t %s \t %s \n", date[k], index[k], files[k])
 			}
 		}
+	default:
+		fmt.Printf("%q is not valid command.\n", os.Args[1])
+		fmt.Println("Use the help command 'diarytxt help' for help.")
+		os.Exit(2)
 	}
 
 	check(err)
