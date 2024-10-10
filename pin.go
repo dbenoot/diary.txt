@@ -40,6 +40,11 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 		ap = removeIniKey(cfg.Section("general").Key("archived_pins").Strings(","), a)
 		p = appendToIniKey(cfg.Section("general").Key("pins").String(), a)
 
+		_, _ = cfg.Section("general").NewKey("pins", p)
+		_, _ = cfg.Section("general").NewKey("archived_pins", ap)
+		err = cfg.SaveTo(cfgFile)
+		check(err)
+
 	// Remove a pin & TODO add it to a section archived_pins in the config file
 	case len(r) > 0:
 
@@ -49,6 +54,11 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 			p = removeIniKey(cfg.Section("general").Key("pins").Strings(","), r)
 			ap = appendToIniKey(cfg.Section("general").Key("archived_pins").String(), r)
 		}
+
+		_, _ = cfg.Section("general").NewKey("pins", p)
+		_, _ = cfg.Section("general").NewKey("archived_pins", ap)
+		err = cfg.SaveTo(cfgFile)
+		check(err)
 
 	// Index of pins
 	case i:
@@ -150,10 +160,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 		fmt.Println("Use the help command 'diarytxt help' for help.")
 		os.Exit(2)
 	}
-	_, _ = cfg.Section("general").NewKey("pins", p)
-	_, _ = cfg.Section("general").NewKey("archived_pins", ap)
-	err = cfg.SaveTo(cfgFile)
-	check(err)
+
 }
 
 func appendToIniKey(ini string, newkey string) string {
