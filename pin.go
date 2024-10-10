@@ -108,6 +108,37 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 				}
 			}
 		}
+
+		color.Red("Full index of the archived pins and their unique values:")
+
+		for i := range archived_pins {
+
+			var index []string
+
+			for _, file := range fileList {
+				fo, _ := os.Open(file)
+
+				scanner := bufio.NewScanner(fo)
+
+				for scanner.Scan() {
+					if strings.Contains(scanner.Text(), "* "+archived_pins[i]+":") {
+						item := strings.TrimSpace(strings.Replace(scanner.Text(), "* "+archived_pins[i]+":", "", -1))
+						if len(item) > 0 {
+							index = AppendIfMissing(index, item)
+						}
+					}
+				}
+			}
+
+			color.Cyan("Entries for pin " + archived_pins[i])
+			if len(index) != 0 {
+				sortutil.CiAsc(index)
+				for j := range index {
+					fmt.Printf("%v : %s \n", j+1, index[j])
+				}
+			}
+		}
+
 	// List function: shows all diary entries with a specific pin
 	case len(l) > 0:
 		var fileList []string
@@ -145,7 +176,7 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 
 		if len(index) == 0 {
 
-			color.Green("Pin '" + l + "' not present or never completed in journal entries.")
+			color.Red("Pin '" + l + "' not present or never completed in journal entries.")
 
 		} else {
 
