@@ -31,9 +31,10 @@ func main() {
 	// define Diary
 
 	type Diary struct {
-		wd       string
-		pins     []string
-		copyPins bool
+		wd            string
+		pins          []string
+		archived_pins []string
+		copyPins      bool
 	}
 
 	// define variables
@@ -59,7 +60,7 @@ func main() {
 	// This makes it possible to sync diary specific settings when using cloud sync, as this sync file is in the diary folder.
 	// Splitting up the config files gives the ability to run the executable from anywhere and not only in the diary folder and sanely keep diary specific settings when syncing.
 
-	diary.pins, localCfgFile, diary.copyPins = setPins(diary.wd)
+	diary.pins, diary.archived_pins, localCfgFile, diary.copyPins = setPins(diary.wd)
 
 	// make sure the necessary paths are present
 
@@ -157,7 +158,7 @@ func main() {
 	}
 
 	if pinCommand.Parsed() {
-		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, diary.pins, localCfgFile, os.Args)
+		pin(*addPinFlag, *removePinFlag, *listPinFlag, *indexPinFlag, *indexAllPinFlag, diary.wd, diary.pins, diary.archived_pins, localCfgFile, os.Args)
 	}
 
 }
@@ -209,7 +210,7 @@ func saveWorkDir(workdir string) {
 	}
 }
 
-func setPins(wd string) ([]string, string, bool) {
+func setPins(wd string) ([]string, []string, string, bool) {
 	settingsDir := filepath.Join(wd, "settings")
 	localCfgFile := filepath.Join(settingsDir, "local_config.ini")
 
@@ -218,6 +219,7 @@ func setPins(wd string) ([]string, string, bool) {
 		os.Create(localCfgFile)
 		var localCfg, _ = ini.LooseLoad(localCfgFile)
 		_, _ = localCfg.Section("general").NewKey("pins", "")
+		_, _ = localCfg.Section("general").NewKey("archived_pins", "")
 		_, _ = localCfg.Section("general").NewKey("copy_pin_content", "true")
 		err = localCfg.SaveTo(localCfgFile)
 		check(err)
@@ -227,7 +229,7 @@ func setPins(wd string) ([]string, string, bool) {
 
 	copyPins, _ := localCfg.Section("general").Key("copy_pin_content").Bool()
 
-	return localCfg.Section("general").Key("pins").Strings(","), localCfgFile, copyPins
+	return localCfg.Section("general").Key("pins").Strings(","), localCfg.Section("general").Key("archived_pins").Strings(","), localCfgFile, copyPins
 }
 
 func createDirs(wd string) {

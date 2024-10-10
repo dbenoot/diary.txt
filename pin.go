@@ -25,56 +25,49 @@ import (
 	"github.com/pmylund/sortutil"
 )
 
-func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string, cfgFile string, args []string) {
+func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string, archived_pins []string, cfgFile string, args []string) {
 
 	var err error
+	var cfg, _ = ini.LooseLoad(cfgFile)
+	var p, ap string
 
 	switch {
 	// ADD PIN
 	case len(a) > 0:
-		var cfg, _ = ini.LooseLoad(cfgFile)
-		p := cfg.Section("general").Key("pins").String()
-		if len(p) == 0 {
-			p = a
-		} else {
-			p = p + ", " + a
+		if stringInSlice(a, cfg.Section("general").Key("archived_pins").Strings(",")) {
+			fmt.Printf("Pin '%s' has been archived in the past and will be reactivated.\n", a)
 		}
-		_, _ = cfg.Section("general").NewKey("pins", p)
-		err = cfg.SaveTo(cfgFile)
+		ap = removeIniKey(cfg.Section("general").Key("archived_pins").Strings(","), a)
+		p = appendToIniKey(cfg.Section("general").Key("pins").String(), a)
+
 	// Remove a pin & TODO add it to a section archived_pins in the config file
 	case len(r) > 0:
-		var p string
 
-		if !stringInSlice(r, pins) {
+		if !stringInSlice(r, cfg.Section("general").Key("pins").Strings(",")) {
 			fmt.Printf("Pin '%s' not defined.\n", r)
 		} else {
-			var cfg, _ = ini.LooseLoad(cfgFile)
-			for i, v := range pins {
-				if v == r {
-					pins = append(pins[:i], pins[i+1:]...)
-					break
-				}
-			}
-			for j := range pins {
-				if j == len(pins)-1 {
-					p = p + pins[j]
-				} else {
-					p = p + pins[j] + ", "
-				}
-			}
-			_, _ = cfg.Section("general").NewKey("pins", p)
-			err = cfg.SaveTo(cfgFile)
+			p = removeIniKey(cfg.Section("general").Key("pins").Strings(","), r)
+			ap = appendToIniKey(cfg.Section("general").Key("archived_pins").String(), r)
 		}
+
 	// Index of pins
 	case i:
 		color.Green("Specified pins:")
 		for i := range pins {
 			fmt.Println(pins[i])
 		}
+
+		if len(archived_pins) > 0 {
+			color.Red("Archived pins:")
+			for i := range archived_pins {
+				fmt.Println(archived_pins[i])
+			}
+		}
 	// Indexall: list of pins and the contents
 	case ia:
 		var fileList []string
 		fileList, err = getFileList(sd)
+		check(err)
 
 		color.Green("Full index of the specified pins and their unique values:")
 
@@ -157,6 +150,38 @@ func pin(a string, r string, l string, i bool, ia bool, sd string, pins []string
 		fmt.Println("Use the help command 'diarytxt help' for help.")
 		os.Exit(2)
 	}
-
+	_, _ = cfg.Section("general").NewKey("pins", p)
+	_, _ = cfg.Section("general").NewKey("archived_pins", ap)
+	err = cfg.SaveTo(cfgFile)
 	check(err)
+}
+
+func appendToIniKey(ini string, newkey string) string {
+	if len(ini) == 0 {
+		ini = newkey
+	} else {
+		ini = ini + ", " + newkey
+	}
+	return ini
+}
+
+func removeIniKey(ini []string, key string) string {
+	var p string
+	for i, v := range ini {
+		if v == key {
+			ini = append(ini[:i], ini[i+1:]...)
+			break
+		}
+	}
+
+	// comma-separate the strings in the slice and export to a single string
+
+	for j := range ini {
+		if j == len(ini)-1 {
+			p = p + ini[j]
+		} else {
+			p = p + ini[j] + ", "
+		}
+	}
+	return p
 }
